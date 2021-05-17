@@ -21,9 +21,11 @@ setup(
     include_package_data=True,
     install_requires=["multiqc>=1.10"],
     entry_points={
-        "multiqc.hooks.v1": ["config_loaded = multiqc_sav.multiqc_cmgg:update_config",],
+        "multiqc.hooks.v1": [
+            "config_loaded = multiqc_cmgg.multiqc_cmgg:update_config",
+        ],
         # "multiqc.modules.v1": [],
-        "multiqc.templates.v1": ["cmgg = multiqc_sav.templates.cmgg",],
+        "multiqc.templates.v1": ["cmgg = multiqc_cmgg.templates.cmgg",],
     },
     classifiers=[
         "Development Status :: 4 - Beta",
