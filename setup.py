@@ -24,7 +24,9 @@ setup(
         "multiqc.hooks.v1": [
             "config_loaded = multiqc_cmgg.multiqc_cmgg:update_config",
         ],
-        # "multiqc.modules.v1": [],
+        "multiqc.modules.v1": [
+            "sampletracking = multiqc.modules.sampletracking:MultiqcModule",
+        ],
         "multiqc.templates.v1": ["cmgg = multiqc_cmgg.templates.cmgg",],
     },
     classifiers=[
