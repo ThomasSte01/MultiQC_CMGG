@@ -3,6 +3,8 @@
 <img src="docs/images/MultiQC_logo.png" width="250" title="MultiQC">
 </p>
 
+![Build status](https://github.com/CenterForMedicalGeneticsGhent/MultiQC_CMGG/actions/workflows/linux.yaml/badge.svg)
+
 **MultiQC_CMGG is a plugin for MultiQC containing customized modules and templates**
 
 For more information about MultiQC, see [http://multiqc.info](http://multiqc.info)
@@ -33,20 +35,12 @@ python setup.py install
 
 ### Modules
 
----
-
-Name: Sampletracking
-Description: >
-Parse Picard CrosscheckFingerprints output and format sensible tables and plots
-
----
+| Name           | Description                                                                     |
+| -------------- | ------------------------------------------------------------------------------- |
+| Sampletracking | Parse Picard CrosscheckFingerprints output and format sensible tables and plots |
 
 ### Templates
 
----
-
-Name: cmgg
-Description: >
-CMGG specfic template with custom logo's and affiliate links. To enable this template, add the `-t/--template cmgg` option to the command line
-
----
+| Name | Description                                                                                                                                    |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| cmgg | CMGG specfic template with custom logo's and affiliate links. To enable this template, add the `-t/--template cmgg` option to the command line |
