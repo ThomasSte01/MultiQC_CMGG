@@ -131,3 +131,6 @@ dmypy.json
 # test data
 multiqc_report.html
 multiqc_data
+
+# MacOS
+.DS_Store
