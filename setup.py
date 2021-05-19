@@ -21,12 +21,8 @@ setup(
     include_package_data=True,
     install_requires=["multiqc>=1.10"],
     entry_points={
-        "multiqc.hooks.v1": [
-            "config_loaded = multiqc_cmgg.multiqc_cmgg:update_config",
-        ],
-        "multiqc.modules.v1": [
-            "sampletracking = multiqc.modules.sampletracking:MultiqcModule",
-        ],
+        "multiqc.hooks.v1": ["config_loaded = multiqc_cmgg.multiqc_cmgg:update_config",],
+        "multiqc.modules.v1": ["sampletracking = multiqc_cmgg.modules.sampletracking.sampletracking:MultiqcModule",],
         "multiqc.templates.v1": ["cmgg = multiqc_cmgg.templates.cmgg",],
     },
     classifiers=[

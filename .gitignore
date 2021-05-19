@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 
 # test data
+test
 multiqc_report.html
 multiqc_data
 

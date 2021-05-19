@@ -7,12 +7,13 @@ from csv import DictReader
 from distutils.util import strtobool
 from itertools import chain, groupby
 
+import pandas as pd
 from multiqc import config
 from multiqc.modules.base_module import BaseMultiqcModule
-from multiqc.plots import table
+from multiqc.plots import table, heatmap
 
 # Initialize the logger
-log = logging.getLogger(__name__)
+log = logging.getLogger("multiqc")
 
 # This is a subset, the rest of the fields are self descriptive
 FIELD_DESCRIPTIONS = {
@@ -33,86 +34,107 @@ FIELD_DESCRIPTIONS = {
 class MultiqcModule(BaseMultiqcModule):
     def __init__(self):
 
-        super("Sampletracking", self).__init__(
-            name="CMGG Sampletracking",
+        super(MultiqcModule, self).__init__(
+            name="Sampletracking",
             anchor="sampletracking",
             info=" - Sampletracking QC based on output from Picard CrosscheckFingerprints",
         )
 
+        report_count = self.parse_reports()
+        if report_count > 0:
+            log.info(f"Found {report_count} Sampletracking reports")
+
     def parse_reports(self):
-        """Find Picard CrosscheckFingerprints reports and parse their data.
-    
-        Stores the data in "Sample/Group - Sample/Group" groups since CrosscheckFingerprints
-        does pairwise comparisons between samples at the level selected by `--CROSSCHECK_BY`.
+        """
+        Find Picard CrosscheckFingerprints reports and parse their data.
         """
 
-        self.picard_CrosscheckFingerprints_data = dict()
+        self.picard_CrosscheckFingerprints_df = None
+        report_dfs = []
+        for f in self.find_log_files("sampletracking/crosscheckfingerprints", filehandles=True):
+            report_dfs.append(pd.read_csv(f["f"], sep="\t", comment="#"))
+        self.picard_CrosscheckFingerprints_df = pd.concat(report_dfs, ignore_index=True)
 
-        # Go through logs and find Metrics
-        for f in self.find_log_files("picard/crosscheckfingerprints", filehandles=True):
-            # Parse an individual CrosscheckFingerprints Report
-            (metrics, comments) = _take_till(
-                f["f"], lambda line: line.startswith("#") or line == "\n"
+        self.fingerprints_table()
+        self.lod_heatmap()
+
+        # # Go through logs and find Metrics
+        # for f in self.find_log_files("sampletracking/crosscheckfingerprints", filehandles=True):
+
+        # # Only add sections if we found data
+        # if len(self.picard_CrosscheckFingerprints_data) > 0:
+        #     # For each sample, flag if any comparisons that don't start with "Expected"
+        #     # A sample that does not have all "Expected" will show as `False` and be Red
+        #     # general_stats_data = self._create_general_stats_data(self.picard_CrosscheckFingerprints_data)
+        #     # general_stats_headers = {
+        #     #     "Crosschecks All Expected": {
+        #     #         "title": "Crosschecks",
+        #     #         "description": "All results for samples CrosscheckFingerprints were as expected.",
+        #     #     }
+        #     # }
+        #     # self.general_stats_addcols(general_stats_data, general_stats_headers)
+        return len(report_dfs)
+
+    def lod_heatmap(self):
+        cats, hm_data = self._lod_heatmap_data()
+
+        if len(hm_data) > 0:
+            self.add_section(
+                name="LOD heatmap",
+                anchor="sampletracking-lod-heatmap",
+                description="Heatmap of LOD score per comparison",
+                plot=heatmap.plot(
+                    hm_data,
+                    xcats=cats,
+                    pconfig={
+                        "id": "sampletracking-lod-heatmap-plot",
+                        "title": "Sampletracking: LOD Heatmap",
+                        "min": -5,
+                        "max": 5,
+                        "square": False,
+                    },
+                ),
             )
-            header = next(metrics).rstrip("\n").split("\t")
-            if not "LEFT_GROUP_VALUE" in header:
-                # Not a CrosscheckFingerprints Report
-                continue
-            reader = DictReader(metrics, fieldnames=header, delimiter="\t")
-            # Parse out the tumor awareness option and the lod threshold setting if possible
-            (tumor_awareness, lod_threshold) = _parse_cli(comments[1])
-            for i, row in enumerate(reader):
-                # Check if this row contains samples that should be ignored
-                if self.is_ignore_sample(row["LEFT_SAMPLE"]) or self.is_ignore_sample(
-                    row["RIGHT_SAMPLE"]
-                ):
-                    continue
 
-                # Clean the sammple names
-                row["LEFT_SAMPLE"] = self.clean_s_name(row["LEFT_SAMPLE"], f["root"])
-                row["LEFT_GROUP_VALUE"] = self.clean_s_name(
-                    row["LEFT_GROUP_VALUE"], f["root"]
-                )
-                row["RIGHT_SAMPLE"] = self.clean_s_name(row["RIGHT_SAMPLE"], f["root"])
-                row["RIGHT_GROUP_VALUE"] = self.clean_s_name(
-                    row["RIGHT_GROUP_VALUE"], f["root"]
-                )
+    def _lod_heatmap_data(self):
+        hm_df = self.picard_CrosscheckFingerprints_df.pivot(
+            index="LEFT_SAMPLE", columns="RIGHT_SAMPLE", values="LOD_SCORE"
+        )
+        cats = hm_df.index.tolist()
+        hm_data = hm_df.values.tolist()
 
-                # Set the cli options of interest for this file
-                row["LOD_THRESHOLD"] = lod_threshold
-                row["TUMOR_AWARENESS"] = tumor_awareness
-                self.picard_CrosscheckFingerprints_data[i] = row
+        return [cats, hm_data]
 
-        # Only add sections if we found data
-        if len(self.picard_CrosscheckFingerprints_data) > 0:
-            # For each sample, flag if any comparisons that don't start with "Expected"
-            # A sample that does not have all "Expected" will show as `False` and be Red
-            general_stats_data = _create_general_stats_data(
-                self.picard_CrosscheckFingerprints_data
-            )
-            general_stats_headers = {
-                "Crosschecks All Expected": {
-                    "title": "Crosschecks",
-                    "description": "All results for samples CrosscheckFingerprints were as expected.",
-                }
-            }
-            self.general_stats_addcols(general_stats_data, general_stats_headers)
+    def fingerprints_table(self):
+        # clean data
+        ## remove expexted mismatches
+        table_df = self.picard_CrosscheckFingerprints_df[
+            self.picard_CrosscheckFingerprints_df["RESULT"] != "EXPECTED_MISMATCH"
+        ]
 
-            # Add a table section to the report
+        ## drop rows that contain samples that should be ignored
+        for idx, row in table_df.iterrows():
+            if self.is_ignore_sample(row["LEFT_SAMPLE"]) or self.is_ignore_sample(row["RIGHT_SAMPLE"]):
+                table_df.drop(idx, inplace=True)
+
+        table_data = table_df.to_dict(orient="index")
+
+        if len(table_df) > 0:
             self.add_section(
                 name="Crosscheck Fingerprints",
-                anchor="picard-crosscheckfingerprints",
-                description="Pairwise identity checking betwen samples and groups.",
+                anchor="sampletracking-crosscheckfingerprints",
+                description="Pairwise identity checking between samples.",
                 helptext="""
                 Checks that all data in the set of input files comes from the same individual, based on the selected group granularity.
+                Expected Mismatches have been omitted for clarity.
                 """,
                 plot=table.plot(
-                    self.picard_CrosscheckFingerprints_data,
-                    _get_table_headers(self.picard_CrosscheckFingerprints_data),
+                    table_data,
+                    self._get_table_headers(table_data),
                     {
-                        "namespace": "Picard",
-                        "id": "picard_crosscheckfingerprints_table",
-                        "table_title": "Picard: Crosscheck Fingerprints",
+                        "namespace": "sampletracking",
+                        "id": "sampletracking-crosscheckfingerprints-table",
+                        "table_title": "Sampletracking: Crosscheck Fingerprints",
                         "save_file": True,
                         "col1_header": "ID",
                         "no_beeswarm": True,
@@ -120,9 +142,7 @@ class MultiqcModule(BaseMultiqcModule):
                 ),
             )
 
-        return len(self.picard_CrosscheckFingerprints_data)
-
-    def _take_till(iterator, fn):
+    def _take_till(self, iterator, fn):
         """Take from an iterator till `fn` returns false.
     
         Returns the iterator with the value that caused false at the front, and all the lines skipped till then as a list.
@@ -138,7 +158,7 @@ class MultiqcModule(BaseMultiqcModule):
 
         return (chain([val], iterator), headers)
 
-    def _parse_cli(line):
+    def _parse_cli(self, line):
         """Parse the Picard CLI invocation that is stored in the header section of the file."""
         tumor_awareness_regex = r"CALCULATE_TUMOR_AWARE_RESULTS(\s|=)(\w+)"
         lod_threshold_regex = r"LOD_THRESHOLD(\s|=)(\S+)"
@@ -156,16 +176,15 @@ class MultiqcModule(BaseMultiqcModule):
 
         return (tumor_awareness, lod_threshold)
 
-    def _get_table_headers(data):
+    def _get_table_headers(self, data):
         """Create the headers config"""
 
         crosscheckfingerprints_table_cols = [
             "RESULT",
-            "DATA_TYPE",
-            "LOD_THRESHOLD",
             "LOD_SCORE",
         ]
         crosscheckfingerprints_table_cols_hidden = [
+            "LOD_THRESHOLD",
             "LEFT_RUN_BARCODE",
             "LEFT_LANE",
             "LEFT_MOLECULAR_BARCODE_SEQUENCE",
@@ -180,38 +199,20 @@ class MultiqcModule(BaseMultiqcModule):
         ]
 
         # Allow customisation from the MultiQC config
-        picard_config = getattr(config, "picard_config", {})
-        crosscheckfingerprints_table_cols = picard_config.get(
+        sampletracking_config = getattr(config, "sampletracking_config", {})
+        crosscheckfingerprints_table_cols = sampletracking_config.get(
             "CrosscheckFingerprints_table_cols", crosscheckfingerprints_table_cols
         )
-        crosscheckfingerprints_table_cols_hidden = picard_config.get(
-            "CrosscheckFingerprints_table_cols_hidden",
-            crosscheckfingerprints_table_cols_hidden,
+        crosscheckfingerprints_table_cols_hidden = sampletracking_config.get(
+            "CrosscheckFingerprints_table_cols_hidden", crosscheckfingerprints_table_cols_hidden,
         )
-
-        # Add the Tumor/Normal LOD scores if any pair had the tumor_awareness flag set
-        if any(row["TUMOR_AWARENESS"] for row in data.values()):
-            crosscheckfingerprints_table_cols += [
-                "LOD_SCORE_TUMOR_NORMAL",
-                "LOD_SCORE_NORMAL_TUMOR",
-            ]
-        else:
-            crosscheckfingerprints_table_cols_hidden += [
-                "LOD_SCORE_TUMOR_NORMAL",
-                "LOD_SCORE_NORMAL_TUMOR",
-            ]
 
         # Add Left and Right Sample names / groups, keeping it as minimal as possible
         sample_group_are_same = (
-            lambda x: x["LEFT_SAMPLE"] == x["LEFT_GROUP_VALUE"]
-            and x["RIGHT_SAMPLE"] == x["RIGHT_GROUP_VALUE"]
+            lambda x: x["LEFT_SAMPLE"] == x["LEFT_GROUP_VALUE"] and x["RIGHT_SAMPLE"] == x["RIGHT_GROUP_VALUE"]
         )
-
         if all(sample_group_are_same(values) for values in data.values()):
-            crosscheckfingerprints_table_cols = [
-                "LEFT_SAMPLE",
-                "RIGHT_SAMPLE",
-            ] + crosscheckfingerprints_table_cols
+            crosscheckfingerprints_table_cols = ["LEFT_SAMPLE", "RIGHT_SAMPLE",] + crosscheckfingerprints_table_cols
             crosscheckfingerprints_table_cols_hidden += [
                 "LEFT_GROUP_VALUE",
                 "RIGHT_GROUP_VALUE",
@@ -231,9 +232,7 @@ class MultiqcModule(BaseMultiqcModule):
                 continue
 
             # Set up the configuration for the column
-            h_title = (
-                h.replace("_", " ").strip().lower().capitalize().replace("Lod", "LOD")
-            )
+            h_title = h.replace("_", " ").strip().lower().capitalize().replace("Lod", "LOD")
             headers[h] = {
                 "title": h_title,
                 "description": FIELD_DESCRIPTIONS.get(h),
@@ -243,7 +242,7 @@ class MultiqcModule(BaseMultiqcModule):
 
             # Rename Result to be a longer string so the table formats more nicely
             if h == "RESULT":
-                headers[h]["title"] = "Categorical Result"
+                headers[h]["title"] = "Result"
                 headers[h]["cond_formatting_rules"] = {
                     "pass": [{"s_contains": "EXPECTED_"}],
                     "warn": [{"s_eq": "INCONCLUSIVE"}],
@@ -261,23 +260,15 @@ class MultiqcModule(BaseMultiqcModule):
 
         return headers
 
-    def _create_general_stats_data(in_data):
+    def _create_general_stats_data(self, in_data):
         """Look at the LEFT_SAMPLE fields and determine if there are any pairs for that samples
         that don't have a RESULT that startswith EXPECTED.
         """
         out_data = dict()
         flattened = (row for row in in_data.values())
         sorted_by_left_sample = sorted(flattened, key=lambda r: r["LEFT_SAMPLE"])
-
-        for group, values in groupby(
-            sorted_by_left_sample, key=lambda r: r["LEFT_SAMPLE"]
-        ):
-            passfail = (
-                "Pass"
-                if all(v["RESULT"].startswith("EXPECTED") for v in values)
-                else "Fail"
-            )
+        for group, values in groupby(sorted_by_left_sample, key=lambda r: r["LEFT_SAMPLE"]):
+            passfail = "Pass" if all(v["RESULT"].startswith("EXPECTED") for v in values) else "Fail"
             out_data[group] = {"Crosschecks All Expected": passfail}
 
         return out_data
-

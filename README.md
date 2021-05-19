@@ -33,8 +33,20 @@ python setup.py install
 
 ### Modules
 
-As of writing, no custom modules have been added
+---
+
+Name: Sampletracking
+Description: >
+Parse Picard CrosscheckFingerprints output and format sensible tables and plots
+
+---
 
 ### Templates
 
-This plugin adds a `cmgg` specfic template with custom logo's and affiliate links. To enable this template, add the `-t/--template cmgg` option to the command line
+---
+
+Name: cmgg
+Description: >
+CMGG specfic template with custom logo's and affiliate links. To enable this template, add the `-t/--template cmgg` option to the command line
+
+---
