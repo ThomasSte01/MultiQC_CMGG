@@ -39,14 +39,24 @@ def update_config() -> None:
         del config.avail_modules[module]
 
     # Update search patterns
+    # Overwrite default search pattern and set 'shared' to false to avoid running the module from core mqc
     ## Sampletracking
-    # Overwrite default crosscheckfingerprints search pattern and set 'shared' to false to avoid running the module from core mqc
     if "sampletracking/crosscheckfingerprints" not in config.sp:
+        # add new key
         config.update_dict(
             config.sp,
             {"sampletracking/crosscheckfingerprints": {"contents": "CrosscheckFingerprints", "shared": False}},
         )
+        # overwrite old key
+        config.update_dict(
+            config.sp, {"picard/crosscheckfingerprints": {"fn": "nonexistent", "shared": False}},
+        )
+
     ## Demultiplex
+    if "demux/libraryparams" not in config.sp:
+        config.update_dict(
+            config.sp, {"demux/libraryparams": {"contents": "CollectIlluminaBasecallingMetrics", "shared": False,}}
+        )
     if "demux/collectilluminabasecallingmetrics" not in config.sp:
         config.update_dict(
             config.sp,
@@ -57,17 +67,28 @@ def update_config() -> None:
                 }
             },
         )
+        config.update_dict(
+            config.sp, {"picard/collectilluminabasecallingmetrics": {"fn": "nonexistent", "shared": False}},
+        )
     if "demux/collectilluminalanemetrics" not in config.sp:
         config.update_dict(
             config.sp,
             {"picard/collectilluminalanemetrics": {"contents": "CollectIlluminaLaneMetrics", "shared": False}},
         )
+        config.update_dict(
+            config.sp, {"picard/collectilluminalanemetrics": {"fn": "nonexistent", "shared": False}},
+        )
     if "demux/extractilluminabarcodes" not in config.sp:
         config.update_dict(
             config.sp, {"picard/extractilluminabarcodes": {"contents": "ExtractIlluminaBarcodes", "shared": False}},
+        )
+        config.update_dict(
+            config.sp, {"picard/extractilluminabarcodes": {"fn": "nonexistent", "shared": False}},
         )
     if "demux/markilluminaadapters" not in config.sp:
         config.update_dict(
             config.sp, {"picard/markilluminaadapters": {"contents": "MarkIlluminaAdapters", "shared": False}},
         )
-
+        config.update_dict(
+            config.sp, {"picard/markilluminaadapters": {"fn": "nonexistent", "shared": False}},
+        )
