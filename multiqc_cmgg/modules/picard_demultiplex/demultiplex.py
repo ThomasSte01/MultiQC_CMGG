@@ -28,7 +28,7 @@ class MultiqcModule(BaseMultiqcModule):
 
         # Initialise the parent object
         super(MultiqcModule, self).__init__(
-            name="Picard Demultiplexing", anchor="demux", info=" - A subset of Picard tools used for demultiplexing",
+            name="Demultiplexing", anchor="demux", info=" - Metrics from tools used for demultiplexing",
         )
 
         # Set up class objects to hold parsed data

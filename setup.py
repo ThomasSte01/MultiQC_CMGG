@@ -19,7 +19,7 @@ setup(
     license="MIT",
     packages=find_packages(),
     include_package_data=True,
-    install_requires=["multiqc>=1.10"],
+    install_requires=["multiqc>=1.10", "pandas"],
     entry_points={
         "multiqc.hooks.v1": ["config_loaded = multiqc_cmgg.multiqc_cmgg:update_config",],
         "multiqc.modules.v1": [
