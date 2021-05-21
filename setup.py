@@ -22,7 +22,10 @@ setup(
     install_requires=["multiqc>=1.10"],
     entry_points={
         "multiqc.hooks.v1": ["config_loaded = multiqc_cmgg.multiqc_cmgg:update_config",],
-        "multiqc.modules.v1": ["sampletracking = multiqc_cmgg.modules.sampletracking.sampletracking:MultiqcModule",],
+        "multiqc.modules.v1": [
+            "sampletracking = multiqc_cmgg.modules.sampletracking.sampletracking:MultiqcModule",
+            "picard_demultiplex = multiqc_cmgg.modules.picard_demultiplex.demultiplex:MultiqcModule",
+        ],
         "multiqc.templates.v1": ["cmgg = multiqc_cmgg.templates.cmgg",],
     },
     classifiers=[

@@ -53,10 +53,10 @@ class MultiqcModule(BaseMultiqcModule):
         report_dfs = []
         for f in self.find_log_files("sampletracking/crosscheckfingerprints", filehandles=True):
             report_dfs.append(pd.read_csv(f["f"], sep="\t", comment="#"))
-        self.picard_CrosscheckFingerprints_df = pd.concat(report_dfs, ignore_index=True)
-
-        self.fingerprints_table()
-        self.lod_heatmap()
+        if len(report_dfs) > 0:
+            self.picard_CrosscheckFingerprints_df = pd.concat(report_dfs, ignore_index=True)
+            self.fingerprints_table()
+            self.lod_heatmap()
 
         # # Go through logs and find Metrics
         # for f in self.find_log_files("sampletracking/crosscheckfingerprints", filehandles=True):

@@ -28,7 +28,7 @@ class MultiqcModule(BaseMultiqcModule):
 
         # Initialise the parent object
         super(MultiqcModule, self).__init__(
-            name="Picard Demultiplexing", anchor="picard", info="Subset of Picard tools used for demultiplexing",
+            name="Picard Demultiplexing", anchor="demux", info=" - A subset of Picard tools used for demultiplexing",
         )
 
         # Set up class objects to hold parsed data
@@ -36,6 +36,7 @@ class MultiqcModule(BaseMultiqcModule):
         self.general_stats_data = dict()
         n = dict()
 
+        log.warning("Running Demux")
         # Call submodule functions
         n["CollectIlluminaBasecallingMetrics"] = CollectIlluminaBasecallingMetrics.parse_reports(self)
         if n["CollectIlluminaBasecallingMetrics"] > 0:

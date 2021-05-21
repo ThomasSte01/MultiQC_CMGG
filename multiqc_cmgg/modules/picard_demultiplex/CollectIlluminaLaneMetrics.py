@@ -53,7 +53,7 @@ def parse_reports(self):
     self.picard_lane_metrics = dict()
 
     # Go through logs and find Metrics
-    for f in self.find_log_files("picard/collectilluminalanemetrics", filehandles=True):
+    for f in self.find_log_files("picard_demultiplex/collectilluminalanemetrics", filehandles=True):
         run_name = None
         parsed_data = []
         keys = []

@@ -5,7 +5,7 @@
 import logging
 
 from multiqc.plots import linegraph
-from .util import read_histogram
+from multiqc.modules.picard import util
 
 # Initialise the logger
 log = logging.getLogger(__name__)
@@ -16,7 +16,9 @@ def parse_reports(self):
 
     headers = ["clipped_bases", "read_count"]
     formats = [int, int]
-    all_data = read_histogram(self, "picard/markilluminaadapters", "MarkIlluminaAdapters", headers, formats)
+    all_data = util.read_histogram(
+        self, "picard_demultiplex/markilluminaadapters", "MarkIlluminaAdapters", headers, formats
+    )
 
     # Filter to strip out ignored sample names
     all_data = self.ignore_samples(all_data)

@@ -19,7 +19,7 @@ def parse_reports(self):
     self.picard_barcode_metrics = dict()
 
     # Go through logs and find Metrics
-    for f in self.find_log_files("picard/extractilluminabarcodes", filehandles=True):
+    for f in self.find_log_files("picard_demultiplex/extractilluminabarcodes", filehandles=True):
         lane = None
         raw_data = []
         keys = None
@@ -90,9 +90,7 @@ def parse_reports(self):
         anchor="picard-illuminabarcodemetrics-perlane",
         description="Indicates the number of matches (and mismatches) between the barcode reads and the actual barcodes",
         plot=bargraph.plot(
-            [plot_data["per_lane"], plot_data["per_lane"], plot_data["per_lane"]],
-            plot_cats,
-            per_lane_plot_config,
+            [plot_data["per_lane"], plot_data["per_lane"], plot_data["per_lane"]], plot_cats, per_lane_plot_config,
         ),
     )
 
@@ -101,9 +99,7 @@ def parse_reports(self):
         anchor="picard-illuminabarcodemetrics-perbarcode",
         description="Indicates the number of matches (and mismatches) between the barcode reads and the actual barcodes",
         plot=bargraph.plot(
-            [plot_data["per_bc"], plot_data["per_bc"], plot_data["per_bc"]],
-            plot_cats,
-            per_barcode_plot_config,
+            [plot_data["per_bc"], plot_data["per_bc"], plot_data["per_bc"]], plot_cats, per_barcode_plot_config,
         ),
     )
     # Return the number of detected samples to the parent module

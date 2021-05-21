@@ -18,7 +18,7 @@ def parse_reports(self):
     self.picard_basecalling_metrics = dict()
 
     # Go through logs and find Metrics
-    for f in self.find_log_files("picard/collectilluminabasecallingmetrics", filehandles=True):
+    for f in self.find_log_files("picard_demultiplex/collectilluminabasecallingmetrics", filehandles=True):
         keys = None
 
         for line in f["f"]:
