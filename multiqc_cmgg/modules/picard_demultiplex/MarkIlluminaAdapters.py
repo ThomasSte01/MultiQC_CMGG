@@ -33,7 +33,7 @@ def parse_reports(self):
     # Plot the data and add section
     pconfig = {
         "id": "picard_mark_illumina_adapters",
-        "title": "Picard: Mark Illumina Adapters",
+        "title": "Picard MarkIlluminaAdapters: Clipped bases per read",
         "ylab": "Clipped Bases",
         "xlab": "Read Number",
         "xDecimals": False,
