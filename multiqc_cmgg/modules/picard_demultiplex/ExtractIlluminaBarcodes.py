@@ -137,7 +137,7 @@ def reads_per_lane(data):
     """
     reads_per_lane = {}
     for lane, barcodes in data.items():
-        reads_per_lane[lane] = {
+        reads_per_lane[f"Lane {lane}"] = {
             "READS": 0,
             "PERFECT_MATCHES": 0,
             "ONE_MISMATCH_MATCHES": 0,
@@ -146,11 +146,11 @@ def reads_per_lane(data):
             "PF_ONE_MISMATCH_MATCHES": 0,
         }
         for barcode, barcode_data in barcodes.items():
-            reads_per_lane[lane]["READS"] += int(barcode_data["READS"])
-            reads_per_lane[lane]["PERFECT_MATCHES"] += int(barcode_data["PERFECT_MATCHES"])
-            reads_per_lane[lane]["ONE_MISMATCH_MATCHES"] += int(barcode_data["ONE_MISMATCH_MATCHES"])
-            reads_per_lane[lane]["PF_READS"] += int(barcode_data["PF_READS"])
-            reads_per_lane[lane]["PF_PERFECT_MATCHES"] += int(barcode_data["PF_PERFECT_MATCHES"])
-            reads_per_lane[lane]["PF_ONE_MISMATCH_MATCHES"] += int(barcode_data["PF_ONE_MISMATCH_MATCHES"])
+            reads_per_lane[f"Lane {lane}"]["READS"] += int(barcode_data["READS"])
+            reads_per_lane[f"Lane {lane}"]["PERFECT_MATCHES"] += int(barcode_data["PERFECT_MATCHES"])
+            reads_per_lane[f"Lane {lane}"]["ONE_MISMATCH_MATCHES"] += int(barcode_data["ONE_MISMATCH_MATCHES"])
+            reads_per_lane[f"Lane {lane}"]["PF_READS"] += int(barcode_data["PF_READS"])
+            reads_per_lane[f"Lane {lane}"]["PF_PERFECT_MATCHES"] += int(barcode_data["PF_PERFECT_MATCHES"])
+            reads_per_lane[f"Lane {lane}"]["PF_ONE_MISMATCH_MATCHES"] += int(barcode_data["PF_ONE_MISMATCH_MATCHES"])
 
     return reads_per_lane
