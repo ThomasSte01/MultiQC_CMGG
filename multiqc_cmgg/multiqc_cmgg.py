@@ -38,8 +38,19 @@ def update_config() -> None:
     for module in disabled_modules:
         del config.avail_modules[module]
 
-    # Update search patterns
-    # Overwrite default search pattern and set 'shared' to false to avoid running the module from core mqc
+    # Update search pattern
+    update_search_patterns()
+
+    # Update fn cleanup
+    update_fn_cleanup()
+
+
+def update_search_patterns() -> None:
+    """
+    Update search patterns
+    Overwrite default search pattern and set 'shared' to false to avoid running the module from core mqc
+    :return: None
+    """
     ## Sampletracking
     if "sampletracking/crosscheckfingerprints" not in config.sp:
         # add new key
@@ -104,3 +115,11 @@ def update_config() -> None:
         config.update_dict(
             config.sp, {"picard/markilluminaadapters": {"fn": "nonexistent", "shared": False}},
         )
+
+
+def update_fn_cleanup() -> None:
+    """
+    Update filename cleanup patterns
+    :return: None
+    """
+    config.fn_clean_exts.extend(["_duplicate_metrics", "_samtools_stats", "_samtools_idxstats", ".unaligned"])
