@@ -3,14 +3,13 @@
 import logging
 import re
 from collections import OrderedDict
-from csv import DictReader
 from distutils.util import strtobool
-from itertools import chain, groupby
+from itertools import chain
 
 import pandas as pd
 from multiqc import config
 from multiqc.modules.base_module import BaseMultiqcModule
-from multiqc.plots import table, heatmap
+from multiqc.plots import heatmap, table
 
 # Initialize the logger
 log = logging.getLogger("multiqc")
@@ -57,22 +56,6 @@ class MultiqcModule(BaseMultiqcModule):
             self.picard_CrosscheckFingerprints_df = pd.concat(report_dfs, ignore_index=True)
             self.fingerprints_table()
             self.lod_heatmap()
-
-        # # Go through logs and find Metrics
-        # for f in self.find_log_files("sampletracking/crosscheckfingerprints", filehandles=True):
-
-        # # Only add sections if we found data
-        # if len(self.picard_CrosscheckFingerprints_data) > 0:
-        #     # For each sample, flag if any comparisons that don't start with "Expected"
-        #     # A sample that does not have all "Expected" will show as `False` and be Red
-        #     # general_stats_data = self._create_general_stats_data(self.picard_CrosscheckFingerprints_data)
-        #     # general_stats_headers = {
-        #     #     "Crosschecks All Expected": {
-        #     #         "title": "Crosschecks",
-        #     #         "description": "All results for samples CrosscheckFingerprints were as expected.",
-        #     #     }
-        #     # }
-        #     # self.general_stats_addcols(general_stats_data, general_stats_headers)
         return len(report_dfs)
 
     def lod_heatmap(self):
@@ -259,16 +242,3 @@ class MultiqcModule(BaseMultiqcModule):
                 headers[h]["hidden"] = True
 
         return headers
-
-    def _create_general_stats_data(self, in_data):
-        """Look at the LEFT_SAMPLE fields and determine if there are any pairs for that samples
-        that don't have a RESULT that startswith EXPECTED.
-        """
-        out_data = dict()
-        flattened = (row for row in in_data.values())
-        sorted_by_left_sample = sorted(flattened, key=lambda r: r["LEFT_SAMPLE"])
-        for group, values in groupby(sorted_by_left_sample, key=lambda r: r["LEFT_SAMPLE"]):
-            passfail = "Pass" if all(v["RESULT"].startswith("EXPECTED") for v in values) else "Fail"
-            out_data[group] = {"Crosschecks All Expected": passfail}
-
-        return out_data
