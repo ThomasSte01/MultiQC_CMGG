@@ -63,59 +63,6 @@ def update_search_patterns() -> None:
             config.sp, {"picard/crosscheckfingerprints": {"fn": "nonexistent", "shared": False}},
         )
 
-    ## Demultiplex
-    if "picard_demultiplex/libraryparams" not in config.sp:
-        config.update_dict(
-            config.sp,
-            {"picard_demultiplex/libraryparams": {"contents": "CollectIlluminaBasecallingMetrics", "shared": True,}},
-        )
-
-    if "picard_demultiplex/collectilluminabasecallingmetrics" not in config.sp:
-        config.update_dict(
-            config.sp,
-            {
-                "picard_demultiplex/collectilluminabasecallingmetrics": {
-                    "contents": "CollectIlluminaBasecallingMetrics",
-                    "shared": False,
-                }
-            },
-        )
-        config.update_dict(
-            config.sp, {"picard/collectilluminabasecallingmetrics": {"fn": "nonexistent", "shared": False}},
-        )
-
-    if "picard_demultiplex/collectilluminalanemetrics" not in config.sp:
-        config.update_dict(
-            config.sp,
-            {
-                "picard_demultiplex/collectilluminalanemetrics": {
-                    "contents": "CollectIlluminaLaneMetrics",
-                    "shared": False,
-                }
-            },
-        )
-        config.update_dict(
-            config.sp, {"picard/collectilluminalanemetrics": {"fn": "nonexistent", "shared": False}},
-        )
-
-    if "picard_demultiplex/extractilluminabarcodes" not in config.sp:
-        config.update_dict(
-            config.sp,
-            {"picard_demultiplex/extractilluminabarcodes": {"contents": "ExtractIlluminaBarcodes", "shared": False}},
-        )
-        config.update_dict(
-            config.sp, {"picard/extractilluminabarcodes": {"fn": "nonexistent", "shared": False}},
-        )
-
-    if "picard_demultiplex/markilluminaadapters" not in config.sp:
-        config.update_dict(
-            config.sp,
-            {"picard_demultiplex/markilluminaadapters": {"contents": "MarkIlluminaAdapters", "shared": False}},
-        )
-        config.update_dict(
-            config.sp, {"picard/markilluminaadapters": {"fn": "nonexistent", "shared": False}},
-        )
-
 
 def update_fn_cleanup() -> None:
     """
