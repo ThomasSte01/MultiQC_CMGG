@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multiqc_cmgg"
+version = "0.0.2"
+dependencies = [
+    "pandas",
+    "ruff>=0.8.3",
+    "multiqc>=1.10"
+]
+authors = [
+    {name = "Thomas Stevens", email = "thomas.stevens@student.howest.be"},
+    {name = "Matthias De Smet" , email= "11850640+matthdsm@users.noreply.github.com"}
+]
+description = "MultiQC plugin for interal use at CMGG"
+readme = "README.md"
+license = "MIT"
+keywords = ["bioinformatics", "biology", "sequencing", "NGS", "next generation sequencing", "quality control"]
+
+#[project.entry-points."multiqc.modules.v1"]
+#picard_demultiplex = "multiqc.modules.picard:CrosscheckFingerprints"
+
+[project.entry-points."multiqc.templates.v1"]
+cmgg = "multiqc_cmgg.templates.cmgg"
+
+#[project.entry-points."multiqc.hooks.v1"]
+#config_loaded = "multiqc_cmgg:update_config"
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["multiqc_cmgg*"]
