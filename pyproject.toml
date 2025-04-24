@@ -36,3 +36,9 @@ target-version = "py313"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["multiqc_cmgg*"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"multiqc_cmgg" = ["templates/**/*"]
