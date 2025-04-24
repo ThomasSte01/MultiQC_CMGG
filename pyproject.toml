@@ -24,6 +24,7 @@ keywords = ["bioinformatics", "biology", "sequencing", "NGS", "next generation s
 
 [project.entry-points."multiqc.templates.v1"]
 cmgg = "multiqc_cmgg.templates.cmgg"
+default="multiqc.templates.default"
 
 #[project.entry-points."multiqc.hooks.v1"]
 #config_loaded = "multiqc_cmgg:update_config"
