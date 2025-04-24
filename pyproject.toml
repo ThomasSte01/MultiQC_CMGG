@@ -19,15 +19,13 @@ readme = "README.md"
 license = "MIT"
 keywords = ["bioinformatics", "biology", "sequencing", "NGS", "next generation sequencing", "quality control"]
 
-#[project.entry-points."multiqc.modules.v1"]
-#picard_demultiplex = "multiqc.modules.picard:CrosscheckFingerprints"
+[project.entry-points."multiqc.modules.v1"]
+#ngs = "multiqc.modules.ngsbits:function"
+#coverage = "multiqc.modules.coverage:function2"
 
 [project.entry-points."multiqc.templates.v1"]
 cmgg = "multiqc_cmgg.templates.cmgg"
 default="multiqc.templates.default"
-
-#[project.entry-points."multiqc.hooks.v1"]
-#config_loaded = "multiqc_cmgg:update_config"
 
 [tool.ruff]
 line-length = 120
