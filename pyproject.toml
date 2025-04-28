@@ -19,14 +19,22 @@ readme = "README.md"
 license = "MIT"
 keywords = ["bioinformatics", "biology", "sequencing", "NGS", "next generation sequencing", "quality control"]
 
-[project.entry-points."multiqc.modules.v1"]
-#ngs = "multiqc.modules.ngsbits:function"
-#coverage = "multiqc.modules.coverage:function2"
-
 [project.entry-points."multiqc.templates.v1"]
 cmgg = "multiqc_cmgg.templates.cmgg"
-default="multiqc.templates.default"
 
+#module integration
+
+[project.entry-points."multiqc.modules.v1"]
+ngs = "multiqc.modules.ngsbits.sample_gender:gender"
+#coverage = "multiqc.modules.coverage:function2"
+
+[project.entry-points."multiqc.hooks.v1"]
+config_loaded = "multiqc_cmgg.multiqc_cmgg:update_config"
+
+[project.entry-points."multiqc.cli_options.v1"]
+disable_plugin = "multiqc_cmgg.cli:disable_plugin"
+
+#necessary for building
 [tool.ruff]
 line-length = 120
 target-version = "py313"
