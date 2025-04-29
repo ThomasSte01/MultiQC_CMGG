@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-""" MultiQC submodule to parse output from Picard CrosscheckFingerprints """
-
 from multiqc.base_module import BaseMultiqcModule
 from multiqc.plots import table
 from typing import Dict, Union
@@ -87,6 +84,7 @@ def parse_reports(self: BaseMultiqcModule) -> int:
     self.general_stats_addcols(samplegender_data, headers)
 
     return len(samplegender_data)
+
 
 def parse_file(f: str) -> Dict[str, Union[float, str]]:
     """

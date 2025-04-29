@@ -25,8 +25,8 @@ cmgg = "multiqc_cmgg.templates.cmgg"
 #module integration
 
 [project.entry-points."multiqc.modules.v1"]
-ngs = "multiqc.modules.ngsbits.sample_gender:gender"
-#coverage = "multiqc.modules.coverage:function2"
+ngs = "multiqc_cmgg.modules.ngsbits:MultiqcModule"
+#coverage = "multiqc_cmgg.modules.coverage:MultiqcModule"
 
 [project.entry-points."multiqc.hooks.v1"]
 config_loaded = "multiqc_cmgg.multiqc_cmgg:update_config"
