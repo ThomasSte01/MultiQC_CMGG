@@ -1,5 +1,5 @@
 ngsbits/xy:
-  fn:"*_xy.tsv"
+  fn:"_xy.tsv"
 ngsbits/hetx:
   fn:"*_hetx.tsv"
 ngsbits/sry:

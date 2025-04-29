@@ -30,10 +30,10 @@ def parse_reports(self: BaseMultiqcModule) -> int:
 
     self.add_software_version(None)
 
-    # Add SampleGender Table
+    # Add samplegender Table
     config_table = {
         "id": "samplegender",
-        "title": "SampleGender",
+        "title": "samplegender",
     }
 
     headers = {
@@ -70,7 +70,7 @@ def parse_reports(self: BaseMultiqcModule) -> int:
     }
 
     self.add_section(
-        name="SampleGender",
+        name="samplegender",
         anchor="ngsbits-samplegender",
         description='<a href="https://github.com/imgag/ngs-bits/blob/master/doc/tools/SampleGender.md" target="_blank">SampleGender</a>'
         " determines the gender of a sample from the BAM/CRAM file.",
@@ -88,7 +88,7 @@ def parse_reports(self: BaseMultiqcModule) -> int:
 
 def parse_file(f: str) -> Dict[str, Union[float, str]]:
     """
-    Parses a single SampleGender TSV file content and returns a dictionary
+    Parses a single samplegender TSV file content and returns a dictionary
     with the relevant data from columns 2-5.
     """
     parsed_data: Dict[str, Union[float, str]] = {}
