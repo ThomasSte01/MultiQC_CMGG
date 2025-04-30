@@ -41,7 +41,7 @@ class MultiqcModule(BaseMultiqcModule):
                     samplegender_data[s_name].update(parsed)
                 # Filter to strip out ignored sample names
                 samplegender_data = self.ignore_samples(samplegender_data)
-        log.debug(f" dict with results: {samplegender_data}")
+        # log.debug(f" dict with results: {samplegender_data}")
         
         n_reports_found = len(samplegender_data)
         if n_reports_found > 0:
@@ -124,7 +124,7 @@ class MultiqcModule(BaseMultiqcModule):
 def parse_file(f: str) -> Dict[str, Union[float, str]]:
     """
     Parses a single samplegender TSV file content and returns a dictionary
-    with the relevant data from columns 2-5.
+    with the relevant data from columns 2-6.
     """
     parsed_data: Dict[str, Union[float, str]] = {}
     lines = f.splitlines()
@@ -135,7 +135,7 @@ def parse_file(f: str) -> Dict[str, Union[float, str]]:
     headers = lines[0].strip().split("\t")[1:6]
     values = lines[1].strip().split("\t")[1:6]
 
-    #changes gender so that every method result can be seperated
+    # Changes gender so that every method result can be separated
     paramdict={"reads_chry":"gender_xy","het_fraction":"gender_hetx","coverage_sry":"gender_sry"}
     for param,test in paramdict.items():
         if param in headers:
