@@ -23,7 +23,7 @@ keywords = ["bioinformatics", "biology", "sequencing", "NGS", "next generation s
 cmgg = "multiqc_cmgg.templates.cmgg"
 
 [project.entry-points."multiqc.modules.v1"]
-ngs = "multiqc_cmgg.modules.ngsbits.ngsbits:MultiqcModule"
+sample_gender = "multiqc_cmgg.modules.sample_gender.sample_gender:MultiqcModule"
 #coverage = "multiqc_cmgg.modules.coverage:MultiqcModule"
 
 [project.entry-points."multiqc.hooks.v1"]
@@ -45,4 +45,4 @@ include = ["multiqc_cmgg*"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-"multiqc_cmgg" = ["*"]
+"multiqc_cmgg" = ["templates/**/*"]

@@ -7,7 +7,7 @@ using the setuptools plugin hooks.
 
 from __future__ import print_function
 
-from multiqc import config, report
+from multiqc import config
 import importlib_metadata
 import logging
 
@@ -35,23 +35,16 @@ def plugin_execution_start():
 
     log.debug("CMGG - Updating config")
     # Add module to module order
-    config.module_order.extend(["ngs"])
+    config.module_order.extend(["sample_gender"])
      # Move module to the top
-    config.top_modules.extend("ngs")
+    config.top_modules.extend("sample_gender")
 
-    log.info(f": {config.sp.get('ngsbits/samplegender')}")
-    # Add to the search patterns used by modules
-    config.update_dict(config.sp, {"ngsbits/sample_gender": [{"fn": "_ngsbits_sex.tsv"}]})
-    log.info(f"ngsbits/sample_gender: {config.sp.get('ngsbits/sample_gender')}")
     
-    if "ngsbits/xy" not in config.sp:
-        config.update_dict(config.sp, {"ngsbits/xy": {"fn": "*xy.tsv"}})
-        log.info(f"ngsbits/xy pattern: {config.sp.get('ngsbits/xy')}")
-    if "ngsbits/hetx" not in config.sp:
-        config.update_dict(config.sp, {"ngsbits/hetx": {"fn": "*_hetx.tsv"}})
-    if "ngsbits/sry" not in config.sp:
-        config.update_dict(config.sp, {"ngsbits/sry": {"fn": "*_sry.tsv"}})
-
+    # Add to the search patterns used by modules    
+    if "sample_gender/xy" not in config.sp:
+        config.update_dict(config.sp, {"sample_gender/xy": {"fn": "*_xy.tsv","shared":False}})
+        log.info(f"sample_gender/xy pattern: {config.sp.get('sample_gender/xy')}")
+        log.info(f"ngsbits/samplegender: {config.sp.get('ngsbits/samplegender')}")
     # Some additional filename cleaning
     # config.fn_clean_exts.extend([".my_tool_extension", ".removeMetoo"])
 
