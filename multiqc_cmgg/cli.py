@@ -11,7 +11,7 @@ import click
 
 # Sets config.kwargs['disable_plugin'] to True if specified (will be False otherwise)
 disable_plugin = click.option(
-    "--disable-example-plugin",
+    "--disable-plugins",
     "disable_plugin",
     is_flag=True,
     help="Disable the Example MultiQC plugin on this run",

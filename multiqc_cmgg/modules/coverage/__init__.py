@@ -1,3 +1,3 @@
-from multiqc_cmgg.modules.coverage import MultiqcModule
+from .coverage import MultiqcModule
 
 __all__ = ["MultiqcModule"]

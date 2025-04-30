@@ -27,7 +27,7 @@ sample_gender = "multiqc_cmgg.modules.sample_gender.sample_gender:MultiqcModule"
 #coverage = "multiqc_cmgg.modules.coverage:MultiqcModule"
 
 [project.entry-points."multiqc.hooks.v1"]
-execution_start = "multiqc_cmgg.custom_code:plugin_execution_start"
+execution_start = "multiqc_cmgg.multiqc_cmgg:plugin_execution_start"
 
 [project.entry-points."multiqc.cli_options.v1"]
 disable_plugin = "multiqc_cmgg.cli:disable_plugin"

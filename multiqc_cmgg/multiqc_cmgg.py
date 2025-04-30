@@ -33,6 +33,10 @@ def plugin_execution_start():
     #   so we check whether the value is already set. This is to avoid
     #   clobbering values that have been customised by users.
 
+    if config.kwargs.get("disable_plugin", False):
+        log.info("Plugin is disabled")
+        return None
+
     log.debug("CMGG - Updating config")
     # Add module to module order
     config.module_order.extend(["sample_gender"])
