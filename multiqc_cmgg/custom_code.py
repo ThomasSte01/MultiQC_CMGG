@@ -44,7 +44,12 @@ def plugin_execution_start():
     if "sample_gender/xy" not in config.sp:
         config.update_dict(config.sp, {"sample_gender/xy": {"fn": "*_xy.tsv","shared":False}})
         log.info(f"sample_gender/xy pattern: {config.sp.get('sample_gender/xy')}")
-        log.info(f"ngsbits/samplegender: {config.sp.get('ngsbits/samplegender')}")
+
+    if "sample_gender/hetx" not in config.sp:
+        config.update_dict(config.sp, {"sample_gender/hetx": {"fn": "*_hetx.tsv","shared":False}})
+
+    if "sample_gender/sry" not in config.sp:
+        config.update_dict(config.sp, {"sample_gender/sry": {"fn": "*_sry.tsv","shared":False}})
     # Some additional filename cleaning
     # config.fn_clean_exts.extend([".my_tool_extension", ".removeMetoo"])
 

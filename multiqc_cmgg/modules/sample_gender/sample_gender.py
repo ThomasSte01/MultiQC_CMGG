@@ -24,16 +24,23 @@ class MultiqcModule(BaseMultiqcModule):
         # Find and load any input files for this module
         samplegender_data : Dict[str, Dict[str, Union[float, str]]] = dict()
         # log.info(f"find log files: {list(self.find_log_files('sample_gender/xy'))}")
-        for f in self.find_log_files('sample_gender/xy'):
-            self.add_data_source(f)
-            s_name = f["s_name"]
-            s_name = s_name.replace("_xy", "")
+        method_dict={"sample_gender/xy":"_xy","sample_gender/hetx":"_hetx","sample_gender/sry":"_sry"}
+        for method,extension in method_dict.items():
 
-            if s_name in samplegender_data:
-                log.debug(f"Duplicate sample name found! Overwriting: {s_name}")
-            samplegender_data[s_name] = parse_file(f["f"])
-            # Filter to strip out ignored sample names
-            samplegender_data = self.ignore_samples(samplegender_data)
+            for f in self.find_log_files(method):
+                self.add_data_source(f)
+                s_name = f["s_name"]
+                s_name = s_name.replace(extension,"")
+                parsed =parse_file(f["f"])
+
+                if s_name not in samplegender_data:
+                    samplegender_data[s_name] = parsed
+                
+                if s_name in samplegender_data:
+                    samplegender_data[s_name].update(parsed)
+                # Filter to strip out ignored sample names
+                samplegender_data = self.ignore_samples(samplegender_data)
+        log.debug(f" dict with results: {samplegender_data}")
         
         n_reports_found = len(samplegender_data)
         if n_reports_found > 0:
@@ -53,35 +60,47 @@ class MultiqcModule(BaseMultiqcModule):
         }
 
         headers = {
-            "gender": {
-                "title": "Predicted Gender",
+            "gender_xy": {
+                "title": "Calculated sex (XY method)",
                 "description": "The predicted gender based on chromosome read ratios.",
                 "namespace": "ngsbits",
                 "scale": False,
             },
-            "reads_chry": {
-                "title": "Reads on ChrY",
-                "description": "The number of reads mapped to the Y chromosome.",
+            "gender_sry": {
+                "title": "Calculated sex (SRY method)",
+                "description": "The predicted gender coverage of SRY gene.",
                 "namespace": "ngsbits",
-                "min": 0,
-                "scale": "Blues",
-                "format": "{:,.0f}",
-            },
-            "reads_chrx": {
-                "title": "Reads on ChrX",
-                "description": "The number of reads mapped to the X chromosome.",
+                "scale": False,
+            },            
+            "gender_hetx": {
+                "title": "Calculated sex (HETX method)",
+                "description": "The predicted gender fraction of heterozygous variants on X chromosome.",
                 "namespace": "ngsbits",
-                "min": 0,
-                "scale": "Reds",
-                "format": "{:,.0f}",
+                "scale": False,
             },
             "ratio_chry_chrx": {
-                "title": "ChrY/ChrX Ratio",
+                "title": "ChrY/ChrX reads ratio",
                 "description": "The ratio of reads mapped to ChrY vs ChrX.",
                 "namespace": "ngsbits",
                 "min": 0,
                 "format": "{:.4f}",
                 "scale": "Purples",
+            },
+            "coverage_sry": {
+                "title": "Coverage SRY",
+                "description": "Coverage of SRY in chrY (SRY)",
+                "namespace": "ngsbits",
+                "min": 0,
+                "scale": "Blues",
+                "format": "{:,.2f}",
+            },
+            "het_fraction": {
+                "title": "Fraction HETX",
+                "description": "Fraction of heterozygous SNPs in chrX (HETX)",
+                "namespace": "ngsbits",
+                "min": 0,
+                "scale": "Reds",
+                "format": "{:,.4f}",
             },
         }
 
@@ -95,7 +114,9 @@ class MultiqcModule(BaseMultiqcModule):
 
         for header in headers.values():
             header["hidden"] = True
-            headers["gender"]["hidden"] = False
+            headers["gender_xy"]["hidden"] = False
+            headers["gender_hetx"]["hidden"] = False
+            headers["gender_sry"]["hidden"] = False
 
         self.general_stats_addcols(samplegender_data, headers)
     
@@ -110,8 +131,15 @@ def parse_file(f: str) -> Dict[str, Union[float, str]]:
     if len(lines) < 2:
         # Not enough data, return an empty dictionary
         return parsed_data
-    headers = lines[0].strip().split("\t")[1:5]
-    values = lines[1].strip().split("\t")[1:5]
+    headers = lines[0].strip().split("\t")[1:6]
+    values = lines[1].strip().split("\t")[1:6]
+
+    #changes gender so that every method result can be seperated
+    paramdict={"reads_chry":"gender_xy","het_fraction":"gender_hetx","coverage_sry":"gender_sry"}
+    for param,test in paramdict.items():
+        if param in headers:
+            headers[0]=test
+
     for key, value in zip(headers, values):
         try:
             parsed_data[key] = float(value)
