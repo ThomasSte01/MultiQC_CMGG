@@ -3,6 +3,7 @@ from multiqc import config
 from multiqc.base_module import BaseMultiqcModule
 from multiqc.plots import table
 from typing import Dict, Union
+import math
 
 
 # Initialise the main MultiQC logger
@@ -143,6 +144,8 @@ def parse_file(f: str) -> Dict[str, Union[float, str]]:
     for key, value in zip(headers, values):
         try:
             parsed_data[key] = float(value)
+            if math.isnan(float(value)):
+                parsed_data[key] = "N/A"
         except ValueError:
             parsed_data[key] = value
     return parsed_data
