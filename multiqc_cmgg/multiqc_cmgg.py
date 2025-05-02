@@ -67,7 +67,10 @@ def plugin_execution_start():
         config.update_dict(config.sp,{"coverage/region_dist":{"fn":"*.mosdepth.region.dist.txt","shared":False}})    
     # adds mosdepth_config to multiqc config file
     if "mosdepth_config" not in config:
-        config.update_dict(config,{"mosdepth_config":{"general_stats_coverage":[1,5,10,20,30,40,50,60,70,80,90,100],"mosdepth_config":{"general_stats_coverage_hidden":[1,5,10,20,30,40,50,60,70,80,90,100]}}}) 
+        config.update_dict(config,{"mosdepth_config":{
+            "general_stats_coverage":[1,5,10,20,30,40,50,60,70,80,90,100],
+            "general_stats_coverage_hidden":[1,5,10,20,30,40,50,60,70,80,90,100]}
+            }) 
         
     # Some additional filename cleaning
     # config.fn_clean_exts.extend([".my_tool_extension", ".removeMetoo"])
