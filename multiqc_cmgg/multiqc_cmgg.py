@@ -39,12 +39,13 @@ def plugin_execution_start():
 
     log.debug("CMGG - Updating config")
     # Add module to module order
-    config.module_order.extend(["sample_gender"])
+    config.module_order.extend(["sample_gender","coverage"])
      # Move module to the top
-    config.top_modules.extend("sample_gender")
+    config.top_modules.extend(["sample_gender","coverage"])
 
     
-    # Add to the search patterns used by modules    
+    # Add to the search patterns used by modules
+    # Sample_gender search patterns    
     if "sample_gender/xy" not in config.sp:
         config.update_dict(config.sp, {"sample_gender/xy": {"fn": "*_xy.tsv","shared":False}})
         log.info(f"sample_gender/xy pattern: {config.sp.get('sample_gender/xy')}")
@@ -54,6 +55,20 @@ def plugin_execution_start():
 
     if "sample_gender/sry" not in config.sp:
         config.update_dict(config.sp, {"sample_gender/sry": {"fn": "*_sry.tsv","shared":False}})
+
+    ## Coverage search patterrns
+    if "coverage/summary" not in config.sp:
+        config.update_dict(config.sp,{"coverage/summary":{"fn":"*.mosdepth.summary.txt","shared":False}})
+
+    if "coverage/global_dist" not in config.sp:
+        config.update_dict(config.sp,{"coverage/global_dist":{"fn":"*.mosdepth.global.dist.txt","shared":False}})
+
+    if "coverage/region_dist" not in config.sp:
+        config.update_dict(config.sp,{"coverage/region_dist":{"fn":"*.mosdepth.region.dist.txt","shared":False}})    
+    # adds mosdepth_config to multiqc config file
+    if "mosdepth_config" not in config:
+        config.update_dict(config,{"mosdepth_config":{"general_stats_coverage":[1,5,10,20,30,40,50,60,70,80,90,100],"mosdepth_config":{"general_stats_coverage_hidden":[1,5,10,20,30,40,50,60,70,80,90,100]}}}) 
+        
     # Some additional filename cleaning
     # config.fn_clean_exts.extend([".my_tool_extension", ".removeMetoo"])
 
