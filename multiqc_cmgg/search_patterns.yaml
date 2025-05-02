@@ -1,6 +1,0 @@
-ngsbits/xy:
-  fn:"_xy.tsv"
-ngsbits/hetx:
-  fn:"*_hetx.tsv"
-ngsbits/sry:
-  fn:"*_sry.tsv"
