@@ -1,20 +1,18 @@
-import logging
-from multiqc import config
-from multiqc.base_module import BaseMultiqcModule,ModuleNoSamplesFound
-
 import fnmatch
+import logging
 from collections import defaultdict
 from typing import Dict, List, Optional, Tuple, Union
+
 from multiqc import Plot, config
+from multiqc.base_module import BaseMultiqcModule, ModuleNoSamplesFound
 from multiqc.modules.qualimap.QM_BamQC import genome_fraction_helptext
 from multiqc.plots import bargraph, linegraph
 from multiqc.plots.linegraph import smooth_array
 from multiqc.utils.util_functions import update_dict
 
-# Initialise the main MultiQC logger
-log = logging.getLogger("multiqc")
+log = logging.getLogger(__name__)
 
-# Reading in config file
+
 def read_config():
     cfg = getattr(config, "mosdepth_config", dict())
     if not isinstance(cfg, dict):
@@ -72,7 +70,7 @@ def calc_median_coverage(cum_fraction_by_cov) -> Optional[float]:
             break
     return median_cov
 
-log.info("started module")
+
 class MultiqcModule(BaseMultiqcModule):
     """
     Mosdepth can generate several output files all with a common prefix and different endings:
@@ -170,22 +168,21 @@ class MultiqcModule(BaseMultiqcModule):
       ychr: myYchr
     ```
     """
-    def __init__(self):
 
-        # Initialise the parent module Class object
+    def __init__(self):
         super(MultiqcModule, self).__init__(
-            name="Coverage",
+            name="coverage",
             anchor="coverage",
             href="https://github.com/brentp/mosdepth",
-            info="Adjusted version of mosdepth, Fast BAM/CRAM depth calculation for WGS, exome, or targeted sequencing ",
+            info="Fast BAM/CRAM depth calculation for WGS, exome, or targeted sequencing",
             doi="10.1093/bioinformatics/btx699",
         )
-        
+
         self.cfg = read_config()
         genstats_by_sample: Dict[str, Dict[str, Union[int, float]]] = defaultdict(dict)  # mean coverage
 
         # Parse mean coverage
-        for f in self.find_log_files("mosdepth/summary"):
+        for f in self.find_log_files("coverage/summary"):
             s_name = self.clean_s_name(f["fn"], f)
             for line in f["f"].splitlines():
                 # The first column can be a contig name, "total", "total_region".
@@ -200,6 +197,7 @@ class MultiqcModule(BaseMultiqcModule):
                     genstats_by_sample[s_name]["coverage_bases"] = int(bases)
                     genstats_by_sample[s_name]["length"] = int(length)
                     self.add_data_source(f, s_name=s_name, section="summary")
+
         # Filter out any samples from --ignore-samples
         genstats_by_sample = defaultdict(dict, self.ignore_samples(genstats_by_sample))
         samples_in_summary = set(genstats_by_sample.keys())
@@ -475,7 +473,7 @@ class MultiqcModule(BaseMultiqcModule):
         show_excluded_debug_logs = self.cfg.get("show_excluded_debug_logs") is True
 
         # Parse coverage distributions
-        for f in self.find_log_files(f"mosdepth/{scope}_dist", filecontents=False, filehandles=True):
+        for f in self.find_log_files(f"coverage/{scope}_dist", filecontents=False, filehandles=True):
             s_name = self.clean_s_name(f["fn"], f)
             if s_name in cumulative_pct_by_cov_by_sample:  # both region and global might exist, prioritizing region
                 continue
@@ -602,5 +600,3 @@ class MultiqcModule(BaseMultiqcModule):
             xy_cov_by_sample,
             genstats_by_sample,
         )
-
-        
