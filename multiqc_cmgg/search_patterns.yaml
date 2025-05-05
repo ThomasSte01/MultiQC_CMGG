@@ -1,3 +1,4 @@
+# sample_gender module
 sample_gender/xy: 
   fn: "*_xy.tsv"
   shared : false
@@ -7,14 +8,17 @@ sample_gender/hetx:
 sample_gender/sry: 
   fn: "*_sry.tsv"
   shared : false
+
+# coverage module
 coverage/summary:
   fn: "*.mosdepth.summary.txt"
   shared: false
-
 coverage/global_dist:
   fn: "*.mosdepth.global.dist.txt"
   shared: false
-
 coverage/region_dist:
   fn: "*.mosdepth.region.dist.txt"
+  shared: false
+coverage/runinfo:
+  fn: "*_runinfo.txt"
   shared: false
