@@ -372,7 +372,7 @@ class MultiqcModule(BaseMultiqcModule):
                 "max": 100,
                 "min": 0,
                 "suffix": "%",
-                "scale": "RdYlGn",
+                "scale": False,
                 "hidden": t in hidden_threshs,
             }
         # Add mosdepth summary to General Stats
@@ -391,6 +391,7 @@ class MultiqcModule(BaseMultiqcModule):
                     "min": 0,
                     "suffix": "X",
                     "scale": "BuPu",
+                    "hidden":True,
                 },
                 "min_coverage": {
                     "title": "Min Cov.",
