@@ -138,3 +138,6 @@ multiqc_data
 
 #outputs
 outputs
+
+#Test_data
+mosdepth
