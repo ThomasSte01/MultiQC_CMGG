@@ -1,0 +1,20 @@
+sample_gender/xy: 
+  fn: "*_xy.tsv"
+  shared : false
+sample_gender/hetx: 
+  fn: "*_hetx.tsv"
+  shared : false
+sample_gender/sry: 
+  fn: "*_sry.tsv"
+  shared : false
+coverage/summary:
+  fn: "*.mosdepth.summary.txt"
+  shared: false
+
+coverage/global_dist:
+  fn: "*.mosdepth.global.dist.txt"
+  shared: false
+
+coverage/region_dist:
+  fn: "*.mosdepth.region.dist.txt"
+  shared: false

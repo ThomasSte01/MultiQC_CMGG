@@ -1,0 +1,15 @@
+---
+mosdepth_config:
+  general_stats_coverage: [1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+  general_stats_coverage_hidden: [1, 5, 10, 30, 40, 50, 60, 70, 80, 90, 100]
+
+
+table_cond_formatting_rules:
+  general_stats_table_table:
+    pass:
+      - gt: 90
+    fail:
+      - lt: 89
+table_cond_formatting_colours:
+  - pass: "#5cb85c"
+  - fail: "#d9534f"
