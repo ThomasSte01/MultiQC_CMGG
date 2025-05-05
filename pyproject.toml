@@ -45,4 +45,4 @@ include = ["multiqc_cmgg*"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-"multiqc_cmgg" = ["templates/**/*"]
+"multiqc_cmgg" = ["templates/**/*","*"]
