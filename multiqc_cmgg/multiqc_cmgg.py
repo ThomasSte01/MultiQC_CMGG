@@ -10,6 +10,7 @@ from __future__ import print_function
 from multiqc import config
 import importlib_metadata
 import logging
+import yaml
 
 # Initialise the main MultiQC logger
 log = logging.getLogger("multiqc")
@@ -43,35 +44,35 @@ def plugin_execution_start():
      # Move module to the top
     config.top_modules.extend(["sample_gender","coverage"])
 
-    
     # Add to the search patterns used by modules
-    # Sample_gender search patterns    
-    if "sample_gender/xy" not in config.sp:
-        config.update_dict(config.sp, {"sample_gender/xy": {"fn": "*_xy.tsv","shared":False}})
-        log.info(f"sample_gender/xy pattern: {config.sp.get('sample_gender/xy')}")
 
-    if "sample_gender/hetx" not in config.sp:
-        config.update_dict(config.sp, {"sample_gender/hetx": {"fn": "*_hetx.tsv","shared":False}})
 
-    if "sample_gender/sry" not in config.sp:
-        config.update_dict(config.sp, {"sample_gender/sry": {"fn": "*_sry.tsv","shared":False}})
+    def load_yaml_as_flat_dict_one_level(file_path, sep='/'):
+        def flatten_one_level(d, parent_key=''):
+            items = {}
+            for k, v in d.items():
+                new_key = f"{parent_key}{sep}{k}" if parent_key else k
+                if isinstance(v, dict):
+                    items[new_key] = v  # Only flatten one level: keep inner dict as value
+                else:
+                    items[new_key] = v
+            return items
 
-    ## Coverage search patterrns
-    if "coverage/summary" not in config.sp:
-        config.update_dict(config.sp,{"coverage/summary":{"fn":"*.mosdepth.summary.txt","shared":False}})
+        with open(file_path, 'r') as f:
+            data = yaml.safe_load(f) or {}
 
-    if "coverage/global_dist" not in config.sp:
-        config.update_dict(config.sp,{"coverage/global_dist":{"fn":"*.mosdepth.global.dist.txt","shared":False}})
+        return flatten_one_level(data)
 
-    if "coverage/region_dist" not in config.sp:
-        config.update_dict(config.sp,{"coverage/region_dist":{"fn":"*.mosdepth.region.dist.txt","shared":False}})    
-    # adds mosdepth_config to multiqc config file
-    if not hasattr(config, "mosdepth_config"):
-        config.mosdepth_config = {
-            "general_stats_coverage": [1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-            "general_stats_coverage_hidden": [1, 5, 10, 30, 40, 50, 60, 70, 80, 90, 100]
-            }
-        
+    # Load file and flatten
+    searchpattern_yaml_dict = load_yaml_as_flat_dict_one_level('/home/guest/BIT11/Git/MultiQC_CMGG/multiqc_cmgg/search_patterns.yaml')
+    config_yaml_dict = load_yaml_as_flat_dict_one_level('/home/guest/BIT11/Git/MultiQC_CMGG/multiqc_cmgg/config_defaults.yaml')
+
+    for key in searchpattern_yaml_dict.keys():
+        config.update_dict(config.sp,searchpattern_yaml_dict)
+    for key in config_yaml_dict.keys():
+        setattr(config,key,config_yaml_dict[key])
+        log.info(key)
+    
     # Some additional filename cleaning
     # config.fn_clean_exts.extend([".my_tool_extension", ".removeMetoo"])
 
