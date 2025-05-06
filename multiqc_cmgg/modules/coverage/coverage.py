@@ -473,12 +473,35 @@ class MultiqcModule(BaseMultiqcModule):
         included_contigs = set()
         show_excluded_debug_logs = self.cfg.get("show_excluded_debug_logs") is True
 
+        #Loading in names from runinfo file
+        runinfo_names_dict={}
+
+        for f in self.find_log_files("coverage/runinfo"):
+            file_path=f["root"]+"/"+f["fn"]
+
+            with open(file_path,"r") as runinfo:
+                for line in runinfo:
+                    split_line=line.split("\t")
+                    if split_line[3]=="True":
+                        sample=split_line[2]+"_"+split_line[0]+"_Proband"
+
+                    else:
+                        sample=split_line[2]+"_"+split_line[0]
+                    runinfo_names_dict[split_line[0]]=sample
+            
+
         # Parse coverage distributions
         for f in self.find_log_files(f"coverage/{scope}_dist", filecontents=False, filehandles=True):
             s_name = self.clean_s_name(f["fn"], f)
+
             if s_name in cumulative_pct_by_cov_by_sample:  # both region and global might exist, prioritizing region
                 continue
-
+            
+            #replacing s_name with sample names based of runinfo file
+            split_s_name=s_name.split("_")[0]
+            if split_s_name in runinfo_names_dict:
+                s_name=runinfo_names_dict[split_s_name]
+            
             self.add_data_source(f, s_name=s_name, section="genome_results")
 
             bases_fraction_sum_per_contig: Dict[str, float] = defaultdict(float)
