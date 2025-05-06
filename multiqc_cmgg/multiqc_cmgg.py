@@ -44,6 +44,15 @@ def plugin_execution_start():
      # Move module to the top
     config.top_modules.extend(["sample_gender","coverage"])
 
+    list_sps=[{"sample_gender/xy": {"fn": "*_xy.tsv", "shared": False}},
+            {"sample_gender/hetx": {"fn": "*_hetx.tsv", "shared": False}},
+            {"sample_gender/sry": {"fn": "*_sry.tsv", "shared": False}},
+            {"coverage/summary":{"fn": "*.mosdepth.summary.txt","shared": False}},
+            {"coverage/global_dist":{"fn": "*.mosdepth.global.dist.txt","shared": False}},
+            {"coverage/region_dist":{"fn": "*.mosdepth.region.dist.txt","shared": False}},
+            {"coverage/runinfo":{"fn": "*_runinfo.txt","shared": False}}]
+    for searchp in list_sps:
+        config.update_dict(config.sp,searchp)
     
     # Some additional filename cleaning
     # config.fn_clean_exts.extend([".my_tool_extension", ".removeMetoo"])
