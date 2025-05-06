@@ -44,32 +44,6 @@ def plugin_execution_start():
      # Move module to the top
     config.top_modules.extend(["sample_gender","coverage"])
 
-    # Convert the config_defaults.yaml and search_patterns.yaml to dictionairies (flatten yaml to dict)
-    def load_yaml_as_flat_dict_one_level(file_path, sep='/'):
-        def flatten_one_level(d, parent_key=''):
-            items = {}
-            for k, v in d.items():
-                new_key = f"{parent_key}{sep}{k}" if parent_key else k
-                if isinstance(v, dict):
-                    items[new_key] = v  # Only flatten one level: keep inner dict as value
-                else:
-                    items[new_key] = v
-            return items
-
-        with open(file_path, 'r') as f:
-            data = yaml.safe_load(f) or {}
-
-        return flatten_one_level(data)
-
-    # Load file and flatten
-    searchpattern_yaml_dict = load_yaml_as_flat_dict_one_level('./multiqc_cmgg/search_patterns.yaml')
-    config_yaml_dict = load_yaml_as_flat_dict_one_level('./multiqc_cmgg/config_defaults.yaml')
-
-    # Insert search_pattern,yaml and config_yaml into multiqc config files. (may be redundant, but doesn't seem to work otherwise)
-    for key in searchpattern_yaml_dict.keys():
-        config.update_dict(config.sp,searchpattern_yaml_dict)
-    for key in config_yaml_dict.keys():
-        setattr(config,key,config_yaml_dict[key])
     
     # Some additional filename cleaning
     # config.fn_clean_exts.extend([".my_tool_extension", ".removeMetoo"])

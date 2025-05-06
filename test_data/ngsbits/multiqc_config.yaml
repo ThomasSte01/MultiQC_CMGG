@@ -1,0 +1,10 @@
+sp:
+  sample_gender/xy: 
+    fn: "*_xy.tsv"
+    shared : false
+  sample_gender/hetx: 
+    fn: "*_hetx.tsv"
+    shared : false
+  sample_gender/sry: 
+    fn: "*_sry.tsv"
+    shared : false
