@@ -44,9 +44,7 @@ def plugin_execution_start():
      # Move module to the top
     config.top_modules.extend(["sample_gender","coverage"])
 
-    # Add to the search patterns used by modules
-
-
+    # Convert the config_defaults.yaml and search_patterns.yaml to dictionairies (flatten yaml to dict)
     def load_yaml_as_flat_dict_one_level(file_path, sep='/'):
         def flatten_one_level(d, parent_key=''):
             items = {}
@@ -67,6 +65,7 @@ def plugin_execution_start():
     searchpattern_yaml_dict = load_yaml_as_flat_dict_one_level('./multiqc_cmgg/search_patterns.yaml')
     config_yaml_dict = load_yaml_as_flat_dict_one_level('./multiqc_cmgg/config_defaults.yaml')
 
+    # Insert search_pattern,yaml and config_yaml into multiqc config files. (may be redundant, but doesn't seem to work otherwise)
     for key in searchpattern_yaml_dict.keys():
         config.update_dict(config.sp,searchpattern_yaml_dict)
     for key in config_yaml_dict.keys():
