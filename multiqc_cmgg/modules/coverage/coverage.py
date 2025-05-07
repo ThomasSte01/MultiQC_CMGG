@@ -477,30 +477,42 @@ class MultiqcModule(BaseMultiqcModule):
         runinfo_names_dict={}
 
         for f in self.find_log_files("coverage/runinfo"):
+            if not f:
+                log.error("No runinfo file was found in folder")
             file_path=f["root"]+"/"+f["fn"]
+
+            list_Whole_exome=['exome','Whole_Exome_CYTO','Whole_Exome_BW','Whole_Exome_DNA','Research']
+            list_Mendeliome=['Mendeliome','Mendeliome_FAST-WES','Mendeliome_Diagnostiek','Mendeliome_Research','Mendeliome_Proza','Mendeliome_BW','Mendeliome_DNA','Mendeliome_CYTO','Mendeliome_hepato','Mendeliome_lung','Verwantschap','Uniparental_disomy']
 
             with open(file_path,"r") as runinfo:
                 for line in runinfo:
                     split_line=line.split("\t")
+
                     if split_line[3]=="True":
                         sample=split_line[2]+"_"+split_line[0]+"_Proband"
-
                     else:
                         sample=split_line[2]+"_"+split_line[0]
-                    runinfo_names_dict[split_line[0]]=sample
-            
 
+                    if split_line[2] in list_Whole_exome:
+                        runinfo_names_dict[split_line[0]]=sample
+                    elif split_line[2] in list_Mendeliome:
+                        runinfo_names_dict[split_line[0]+"_Mendeliome"]=sample
+
+                    else:
+                        runinfo_names_dict[split_line[0]+"_"+split_line[2]]=sample
+            
         # Parse coverage distributions
         for f in self.find_log_files(f"coverage/{scope}_dist", filecontents=False, filehandles=True):
             s_name = self.clean_s_name(f["fn"], f)
-
+            if s_name not in runinfo_names_dict:
+                continue
+            log.info(f"s_name: {s_name} file handle {f["fn"]}")
             if s_name in cumulative_pct_by_cov_by_sample:  # both region and global might exist, prioritizing region
                 continue
             
             #replacing s_name with sample names based of runinfo file
-            split_s_name=s_name.split("_")[0]
-            if split_s_name in runinfo_names_dict:
-                s_name=runinfo_names_dict[split_s_name]
+            if s_name in runinfo_names_dict:
+                s_name=runinfo_names_dict[s_name]
             
             self.add_data_source(f, s_name=s_name, section="genome_results")
 
