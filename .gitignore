@@ -135,3 +135,6 @@ multiqc_data
 
 # MacOS
 .DS_Store
+
+#outputs
+outputs

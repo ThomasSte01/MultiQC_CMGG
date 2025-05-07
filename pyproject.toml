@@ -1,4 +1,48 @@
-[tool.black]
-line-length = 120
-target_version = ['py36','py37','py38']
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
+[project]
+name = "multiqc_cmgg"
+version = "0.0.2"
+dependencies = [
+    "pandas",
+    "ruff>=0.8.3",
+    "multiqc>=1.10"
+]
+authors = [
+    {name = "Thomas Stevens", email = "thomas.stevens@student.howest.be"},
+    {name = "Matthias De Smet" , email= "11850640+matthdsm@users.noreply.github.com"}
+]
+description = "MultiQC plugin for interal use at CMGG"
+readme = "README.md"
+license = "MIT"
+keywords = ["bioinformatics", "biology", "sequencing", "NGS", "next generation sequencing", "quality control"]
+
+[project.entry-points."multiqc.templates.v1"]
+cmgg = "multiqc_cmgg.templates.cmgg"
+
+[project.entry-points."multiqc.modules.v1"]
+sample_gender = "multiqc_cmgg.modules.sample_gender.sample_gender:MultiqcModule"
+coverage = "multiqc_cmgg.modules.coverage.coverage:MultiqcModule"
+
+[project.entry-points."multiqc.hooks.v1"]
+execution_start = "multiqc_cmgg.multiqc_cmgg:plugin_execution_start"
+
+[project.entry-points."multiqc.cli_options.v1"]
+disable_plugin = "multiqc_cmgg.cli:disable_plugin"
+
+#necessary for building
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["multiqc_cmgg*"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"multiqc_cmgg" = ["templates/**/*","*"]
