@@ -181,35 +181,14 @@ class MultiqcModule(BaseMultiqcModule):
         self.cfg = read_config()
         genstats_by_sample: Dict[str, Dict[str, Union[int, float]]] = defaultdict(dict)  # mean coverage
 
-        # Parse mean coverage
-        for f in self.find_log_files("coverage/summary"):
-            s_name = self.clean_s_name(f["fn"], f)
-            for line in f["f"].splitlines():
-                # The first column can be a contig name, "total", "total_region".
-                # We want to use "total_region" if available. It is available when
-                # --by is specified. It always goes after "total", so we can just
-                # assume it will override the information collected for "total":
-                if line.startswith("total\t") or line.startswith("total_region\t"):
-                    contig, length, bases, mean, min_cov, max_cov = line.split("\t")
-                    genstats_by_sample[s_name]["mean_coverage"] = float(mean)
-                    genstats_by_sample[s_name]["min_coverage"] = float(min_cov)
-                    genstats_by_sample[s_name]["max_coverage"] = float(max_cov)
-                    genstats_by_sample[s_name]["coverage_bases"] = int(bases)
-                    genstats_by_sample[s_name]["length"] = int(length)
-                    self.add_data_source(f, s_name=s_name, section="summary")
-
         # Filter out any samples from --ignore-samples
         genstats_by_sample = defaultdict(dict, self.ignore_samples(genstats_by_sample))
-        samples_in_summary = set(genstats_by_sample.keys())
 
-        data_dicts_global = self.parse_cov_dist("global")
         data_dicts_region = self.parse_cov_dist("region")
-        data_dicts_global = [self.ignore_samples(d) for d in data_dicts_global]
         data_dicts_region = [self.ignore_samples(d) for d in data_dicts_region]
 
-        samples_global = set.union(*(set(d.keys()) for d in data_dicts_global))
         samples_region = set.union(*(set(d.keys()) for d in data_dicts_region))
-        samples_found = samples_in_summary | samples_global | samples_region
+        samples_found = samples_region
         if not samples_found:
             raise ModuleNoSamplesFound
         log.info(f"Found reports for {len(samples_found)} samples")
@@ -219,29 +198,13 @@ class MultiqcModule(BaseMultiqcModule):
         self.add_software_version(None)
 
         descr_suf = ""
-        if any(data_dicts_global) and any(data_dicts_region):
-            descr_suf = (
-                f". Note that for {len(samples_global)} samples, a BED file was "
-                f"provided, so the data was calculated across those regions. For "
-                f"{len(samples_region)} samples, it's calculated across "
-                f"the entire genome length"
-            )
-            samples_both = samples_global & samples_region
-            if samples_both:
-                descr_suf += (
-                    f". {len(samples_both)} samples have both global and region "
-                    f"reports, and we are showing the data for regions"
-                )
-        elif samples_region:
+        if samples_region:
             descr_suf = ". Calculated across the target regions"
-        elif samples_global:
-            descr_suf = ". Calculated across the entire genome length"
 
-        if samples_region or samples_global:
-            # Prioritizing region reports if found
-            data_dicts = data_dicts_global
-            for d, d_region in zip(data_dicts, data_dicts_region):
-                d.update(d_region)
+        if samples_region:
+            data_dicts = data_dicts_region
+            for d_region in data_dicts_region:
+                d_region.update(d_region)
             (
                 cum_cov_dist_by_sample,
                 perchrom_avg_by_sample,
@@ -363,6 +326,32 @@ class MultiqcModule(BaseMultiqcModule):
             if extra_genstats_by_sample:
                 update_dict(genstats_by_sample, extra_genstats_by_sample)
 
+        # Adding hide buttons to report based of run names
+        list_yaml_configs=["show_hide_buttons","show_hide_mode","show_hide_patterns"]
+
+        for yaml_header in list_yaml_configs:
+            if not hasattr(config, yaml_header) or getattr(config,yaml_header) is None:
+                setattr(config,yaml_header,{})
+        list_show_hide_mode=[]
+        list_show_hide_buttons=[]
+        list_show_hide_patterns=[]
+
+        for f in self.find_log_files(f"coverage/region_dist", filecontents=False, filehandles=True):
+            s_name = self.clean_s_name(f["fn"], f)
+            
+            if "_" in s_name:
+                split_s_name=s_name.split("_",maxsplit=1)
+                if split_s_name[0] not in list_show_hide_buttons:
+                    list_show_hide_buttons.append(split_s_name[0])
+                    list_show_hide_patterns.append(str(split_s_name[0]+"_"))
+                    list_show_hide_mode.append("show")
+        
+        config.show_hide_buttons=list_show_hide_buttons
+        config.show_hide_patterns=list_show_hide_patterns
+        config.show_hide_mode=list_show_hide_mode
+        log.info(config.show_hide_buttons)
+        log.info(config.show_hide_patterns)
+
         genstats_headers = {}
         threshs, hidden_threshs = config.get_cov_thresholds("mosdepth_config")
         for t in threshs:
@@ -374,6 +363,8 @@ class MultiqcModule(BaseMultiqcModule):
                 "suffix": "%",
                 "scale": False,
                 "hidden": t in hidden_threshs,
+                "cond_formatting_rules":{"pass":[{"gt": 90},{"eq": 90}],"fail":[{"lt":90}]},
+                "cond_formatting_colours":[{"pass":"#5cb85c"},{"fail":"#d9534f"}],
             }
         # Add mosdepth summary to General Stats
         genstats_headers.update(
@@ -473,46 +464,12 @@ class MultiqcModule(BaseMultiqcModule):
         included_contigs = set()
         show_excluded_debug_logs = self.cfg.get("show_excluded_debug_logs") is True
 
-        #Loading in names from runinfo file
-        runinfo_names_dict={}
-
-        for f in self.find_log_files("coverage/runinfo"):
-            if not f:
-                log.error("No runinfo file was found in folder")
-            file_path=f["root"]+"/"+f["fn"]
-
-            list_Whole_exome=['exome','Whole_Exome_CYTO','Whole_Exome_BW','Whole_Exome_DNA','Research']
-            list_Mendeliome=['Mendeliome','Mendeliome_FAST-WES','Mendeliome_Diagnostiek','Mendeliome_Research','Mendeliome_Proza','Mendeliome_BW','Mendeliome_DNA','Mendeliome_CYTO','Mendeliome_hepato','Mendeliome_lung','Verwantschap','Uniparental_disomy']
-
-            with open(file_path,"r") as runinfo:
-                for line in runinfo:
-                    split_line=line.split("\t")
-
-                    if split_line[3]=="True":
-                        sample=split_line[2]+"_"+split_line[0]+"_Proband"
-                    else:
-                        sample=split_line[2]+"_"+split_line[0]
-
-                    if split_line[2] in list_Whole_exome:
-                        runinfo_names_dict[split_line[0]]=sample
-                    elif split_line[2] in list_Mendeliome:
-                        runinfo_names_dict[split_line[0]+"_Mendeliome"]=sample
-
-                    else:
-                        runinfo_names_dict[split_line[0]+"_"+split_line[2]]=sample
-            
-        # Parse coverage distributions
+        #Parse coverage distributions
         for f in self.find_log_files(f"coverage/{scope}_dist", filecontents=False, filehandles=True):
             s_name = self.clean_s_name(f["fn"], f)
-            if s_name not in runinfo_names_dict:
-                continue
-            log.info(f"s_name: {s_name} file handle {f["fn"]}")
+                
             if s_name in cumulative_pct_by_cov_by_sample:  # both region and global might exist, prioritizing region
                 continue
-            
-            #replacing s_name with sample names based of runinfo file
-            if s_name in runinfo_names_dict:
-                s_name=runinfo_names_dict[s_name]
             
             self.add_data_source(f, s_name=s_name, section="genome_results")
 
