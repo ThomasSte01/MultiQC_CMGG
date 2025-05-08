@@ -332,9 +332,9 @@ class MultiqcModule(BaseMultiqcModule):
         for yaml_header in list_yaml_configs:
             if not hasattr(config, yaml_header) or getattr(config,yaml_header) is None:
                 setattr(config,yaml_header,{})
-        list_show_hide_mode=[]
-        list_show_hide_buttons=[]
-        list_show_hide_patterns=[]
+        list_show_hide_mode=["hide"]
+        list_show_hide_buttons=["Show all"]
+        list_show_hide_patterns=[[]]
 
         for f in self.find_log_files(f"coverage/region_dist", filecontents=False, filehandles=True):
             s_name = self.clean_s_name(f["fn"], f)
