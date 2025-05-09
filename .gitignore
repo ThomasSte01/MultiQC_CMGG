@@ -137,4 +137,4 @@ multiqc_data
 .DS_Store
 
 #outputs
-outputs
+output
