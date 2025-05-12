@@ -133,7 +133,7 @@ was generated and the button that launches the welcome tour.
 </p>
 {% endif %}
 
-{% if config.show_hide_buttons | length > 0 %}
+{% if config.show_hide_buttons | length > 0 and config.show_hide_color is defined and config.show_hide_color %}
 <p id="mqc_hide_switches_txt">Show/Hide samples:
   <span class="btn-group btn-group-sm" role="group" id="mqc_hide_switches">
     {% for sn_t in config.show_hide_buttons %}
@@ -146,7 +146,7 @@ was generated and the button that launches the welcome tour.
 </p>
 {% endif %}
 
-<!-- {% if config.show_hide_buttons | length > 0 %}
+{% if config.show_hide_buttons | length > 0 and (config.show_hide_color is not defined or not config.show_hide_color ) %}
 <p id="mqc_hide_switches_txt">Show/Hide samples:
   <span class="btn-group btn-group-sm" role="group" id="mqc_hide_switches">
     {% for sn_t in config.show_hide_buttons %}
@@ -156,7 +156,7 @@ was generated and the button that launches the welcome tour.
     {%- endfor %}
   </span>
 </p>
-{% endif %} -->
+{% endif %}
 
 <hr id="mqc_header_hr">
 
