@@ -81,7 +81,7 @@ class MultiqcModule(BaseMultiqcModule):
                 "title": "Certainty of sex match",
                 "description":"match_certainty",
                 "format": "{:.0%}",
-                "scale":"RdYlGn",
+                "scale":False,
                 "max":1,
                 "cond_formatting_rules":{"pass":[{"eq": 1}],"warn":[{"lt":1}],"fail":[{"lt":0.4}]},
                 "cond_formatting_colours":[{"pass":"#5cb85c"},{"warn":"#f0ad4e"}, {"fail":"#d9534f"}],
