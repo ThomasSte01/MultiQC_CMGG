@@ -1,0 +1,8 @@
+custom_plot_config:
+  MSH2_hotspot:
+    defaultsort:
+      - column: "MSH2_c.942+3A>T (counts)"
+        direction: desc
+
+msh2_config:
+  sanger_threshold : 20
