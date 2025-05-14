@@ -10,7 +10,6 @@ from __future__ import print_function
 from multiqc import config
 import importlib_metadata
 import logging
-import yaml
 
 # Initialise the main MultiQC logger
 log = logging.getLogger("multiqc")
@@ -47,7 +46,8 @@ def plugin_execution_start():
     list_sps=[{"sample_gender/xy": {"fn": "*_xy.tsv", "shared": False}},
             {"sample_gender/hetx": {"fn": "*_hetx.tsv", "shared": False}},
             {"sample_gender/sry": {"fn": "*_sry.tsv", "shared": False}},
-            {"coverage/region_dist":{"fn": "*.mosdepth.region.dist.txt","shared": False}},
+            {"coverage/region_dist": {"fn": "*.mosdepth.region.dist.txt","shared": False}},
+            {"msh2/counts": {"fn": "*.counts.txt","shared": False}},
     ]
     for searchp in list_sps:
         config.update_dict(config.sp,searchp)
