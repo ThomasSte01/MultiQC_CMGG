@@ -15,11 +15,8 @@ class MultiqcModule(BaseMultiqcModule):
 
         # Initialise the parent module Class object
         super(MultiqcModule, self).__init__(
-            name="sample_gender",
-            anchor="ngsbits_sample_gender",
-            href="https://github.com/imgag/ngs-bits",
-            info="Calculating statistics from FASTQ, BAM, and VCF",
-            doi="10.1093/bioinformatics/btx032",
+             name="Sex prediction",
+             info="This table show the results of the sex prediction with the expected sex and some metrics.",
         )
 
         # Find and load any input files for this module
@@ -41,8 +38,27 @@ class MultiqcModule(BaseMultiqcModule):
                     samplegender_data[s_name].update(parsed)
                 # Filter to strip out ignored sample names
                 samplegender_data = self.ignore_samples(samplegender_data)
-        # log.debug(f" dict with results: {samplegender_data}")
+        # log.info(f" dict with results: {samplegender_data}")
         
+        # Calculating certainty of gender based of amount of times gender was determined and calculated sex
+        list_gender_methods=['gender_xy','gender_hetx','gender_sry']
+        for sample in samplegender_data.keys():
+            count_M=0
+            count_F=0
+            for method in list_gender_methods:
+                if samplegender_data[sample][method]=="M":
+                    count_M+=1 
+                if samplegender_data[sample][method]=="F":
+                    count_F+=1
+            if count_M >= count_F:
+                percentage=abs(count_M/3)
+                calc_sex="M"
+            elif count_F >= count_M:
+                percentage=abs(count_F/3)
+                calc_sex="F"    
+            samplegender_data[sample].update({"certainty":percentage})
+            samplegender_data[sample].update({"calc_gender":calc_sex})
+
         n_reports_found = len(samplegender_data)
         if n_reports_found > 0:
             log.debug(f"Found {len(samplegender_data)} SampleGender reports")
@@ -56,33 +72,45 @@ class MultiqcModule(BaseMultiqcModule):
 
         # Add samplegender Table
         config_table = {
-            "id": "samplegender",
-            "title": "samplegender",
+            "id": "Sex prediction",
+            "title":"Sex prediction",
         }
 
         headers = {
+            "certainty": {
+                "title": "Certainty of sex match",
+                "description":"match_certainty",
+                "format": "{:.0%}",
+                "scale":False,
+                "max":1,
+                "cond_formatting_rules":{"pass":[{"eq": 1}],"warn":[{"lt":1}],"fail":[{"lt":0.4}]},
+                "cond_formatting_colours":[{"pass":"#5cb85c"},{"warn":"#f0ad4e"}, {"fail":"#d9534f"}],
+            },
+            "calc_gender":{
+                "title": "Calculated Sex",
+                "description":"calculated_sex",
+                "scale":False,
+            },
             "gender_xy": {
                 "title": "Calculated sex (XY method)",
                 "description": "The predicted gender based on chromosome read ratios.",
-                "namespace": "ngsbits",
                 "scale": False,
             },
             "gender_sry": {
                 "title": "Calculated sex (SRY method)",
                 "description": "The predicted gender coverage of SRY gene.",
-                "namespace": "ngsbits",
                 "scale": False,
             },            
             "gender_hetx": {
                 "title": "Calculated sex (HETX method)",
                 "description": "The predicted gender fraction of heterozygous variants on X chromosome.",
-                "namespace": "ngsbits",
                 "scale": False,
+                "cond_formatting_rules":{"unknown":[{"s_eq":"unknown (too few SNPs)"}]},
+                "cond_formatting_colours":[{"unknown":"#808080"}],
             },
             "ratio_chry_chrx": {
                 "title": "ChrY/ChrX reads ratio",
                 "description": "The ratio of reads mapped to ChrY vs ChrX.",
-                "namespace": "ngsbits",
                 "min": 0,
                 "format": "{:.4f}",
                 "scale": "Purples",
@@ -90,7 +118,6 @@ class MultiqcModule(BaseMultiqcModule):
             "coverage_sry": {
                 "title": "Coverage SRY",
                 "description": "Coverage of SRY in chrY (SRY)",
-                "namespace": "ngsbits",
                 "min": 0,
                 "scale": "Blues",
                 "format": "{:,.2f}",
@@ -98,7 +125,6 @@ class MultiqcModule(BaseMultiqcModule):
             "het_fraction": {
                 "title": "Fraction HETX",
                 "description": "Fraction of heterozygous SNPs in chrX (HETX)",
-                "namespace": "ngsbits",
                 "min": 0,
                 "scale": "Reds",
                 "format": "{:,.4f}",
@@ -106,20 +132,8 @@ class MultiqcModule(BaseMultiqcModule):
         }
 
         self.add_section(
-            name="samplegender",
-            anchor="ngsbits-samplegender",
-            description='<a href="https://github.com/imgag/ngs-bits/blob/master/doc/tools/SampleGender.md" target="_blank">SampleGender</a>'
-            " determines the gender of a sample from the BAM/CRAM file.",
             plot=table.plot(data=samplegender_data, headers=headers, pconfig=config_table),
         )
-
-        for header in headers.values():
-            header["hidden"] = True
-            headers["gender_xy"]["hidden"] = False
-            headers["gender_hetx"]["hidden"] = False
-            headers["gender_sry"]["hidden"] = False
-
-        self.general_stats_addcols(samplegender_data, headers)
     
 def parse_file(f: str) -> Dict[str, Union[float, str]]:
     """
@@ -128,12 +142,18 @@ def parse_file(f: str) -> Dict[str, Union[float, str]]:
     """
     parsed_data: Dict[str, Union[float, str]] = {}
     lines = f.splitlines()
-    # log.info(lines)
+    
     if len(lines) < 2:
         # Not enough data, return an empty dictionary
         return parsed_data
     headers = lines[0].strip().split("\t")[1:6]
     values = lines[1].strip().split("\t")[1:6]
+
+    #Changing gender names to abbriviations
+    if values[0]=="male":
+        values[0]="M"
+    elif values[0]=="female":
+        values[0]="F"
 
     # Changes gender so that every method result can be separated
     paramdict={"reads_chry":"gender_xy","het_fraction":"gender_hetx","coverage_sry":"gender_sry"}
@@ -145,7 +165,8 @@ def parse_file(f: str) -> Dict[str, Union[float, str]]:
         try:
             parsed_data[key] = float(value)
             if math.isnan(float(value)):
-                parsed_data[key] = "N/A"
+                parsed_data[key] = "N/A"    
         except ValueError:
             parsed_data[key] = value
+        
     return parsed_data
