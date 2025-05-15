@@ -7,21 +7,21 @@ from typing import Dict, Union
 # Initialise the main MultiQC logger
 log = logging.getLogger("multiqc")
 
-log.info("started MSH2_varcount")
-log.info(f"threshold Sanger has been set to {config.msh2_config["sanger_threshold"]}")
+log.info("started MSH2_hotspot_varcount")
+log.info(f"threshold Sanger has been set to {config.MSH2_hotspot_varcount_config["sanger_threshold"]}")
 class MultiqcModule(BaseMultiqcModule):
     def __init__(self):
         
         # Initialise the parent module Class object
         super(MultiqcModule, self).__init__(
-          name="MSH2_varcount",
+          name="MSH2_hotspot_varcount",
           info="Analysis module used for MSH2 variance counting",
         )
 
         # Find and load any input files for this module
         MSH2_varcount_data : Dict[str, Dict[str, Union[float, str]]] = dict()
         
-        for f in self.find_log_files("msh2/counts"):
+        for f in self.find_log_files("MSH2_hotspot_varcount/counts"):
             self.add_data_source(f)
             s_name = f["s_name"]
             parsed =parse_file(f["f"])
@@ -36,20 +36,20 @@ class MultiqcModule(BaseMultiqcModule):
         # Debug for amount of reports found
         n_reports_found = len(MSH2_varcount_data)
         if n_reports_found > 0:
-            log.debug(f"Found {len(MSH2_varcount_data)} MSH2_varcount reports")
+            log.debug(f"Found {len(MSH2_varcount_data)} MSH2_hotspot_varcount reports")
 
         if n_reports_found == 0:
-            log.debug("No MSH2_varcount reports found")
+            log.debug("No MSH2_hotspot_varcount reports found")
 
         # Write parsed report data to a file
-        self.write_data_file(MSH2_varcount_data, "multiqc_MSH2_varcount")
+        self.write_data_file(MSH2_varcount_data, "multiqc_MSH2_hotspot_varcount")
         self.add_software_version(None)
 
         # log.info(MSH2_varcount_data)
         # Add MSH2_hotspot Table
         config_table = {
-            "id": "MSH2_hotspot",
-            "title":"MSH2_hotspot",
+            "id": "MSH2_hotspot_varcount",
+            "title":"MSH2_hotspot_varcount",
             "sort_rows":True,
             "no_violin": True,
         }
@@ -115,7 +115,7 @@ def parse_file(f: str) -> Dict[str, Union[float, str]]:
         if variant != "MSH2_c.942+3_wt":
             freq=round((int(counts)/(int(parsed_data["MSH2_c.942+3_wt"])+int(counts)))*100 ,2)
             # Determining need for sanger
-            if freq >= config.msh2_config["sanger_threshold"]:
+            if freq >= config.MSH2_hotspot_varcount_config["sanger_threshold"]:
                 parsed_data[variant]=f"{freq}({counts}) - Sangeren!"
             else:
                 parsed_data[variant]=f"{freq}({counts})"
