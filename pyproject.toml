@@ -25,7 +25,7 @@ cmgg = "multiqc_cmgg.templates.cmgg"
 [project.entry-points."multiqc.modules.v1"]
 sample_gender = "multiqc_cmgg.modules.sample_gender.sample_gender:MultiqcModule"
 coverage = "multiqc_cmgg.modules.coverage.coverage:MultiqcModule"
-msh2 = "multiqc_cmgg.modules.MSH2_varcount.MSH2_varcount:MultiqcModule"
+MSH2_hotspot_varcount = "multiqc_cmgg.modules.MSH2_hotspot_varcount.MSH2_hotspot_varcount:MultiqcModule"
 
 [project.entry-points."multiqc.hooks.v1"]
 execution_start = "multiqc_cmgg.multiqc_cmgg:plugin_execution_start"
