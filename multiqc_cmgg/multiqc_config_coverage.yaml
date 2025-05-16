@@ -1,0 +1,22 @@
+#report design
+report_comment: "Panel 20X coverage has to be >=90%"
+
+custom_plot_config:
+  general_stats_table:
+    defaultsort:
+      - column: 20_x_pc
+        direction: asc
+
+extra_fn_clean_trim:
+  - "_per_exon"
+
+mosdepth_config:
+  general_stats_coverage: [20,30]
+  general_stats_coverage_hidden: [30]
+
+sample_names_ignore: 
+  - "*_seqcap_*"
+  - "*Mendeliome_A-L"
+  - "*Mendeliome_M-Z"
+
+max_table_rows: 200000
