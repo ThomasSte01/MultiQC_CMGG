@@ -6,3 +6,8 @@ custom_plot_config:
 
 MSH2_hotspot_varcount_config:
   sanger_threshold : 20
+
+run_modules:
+  - MSH2_hotspot_varcount
+
+template: "cmgg"
