@@ -6,6 +6,7 @@ custom_plot_config:
     defaultsort:
       - column: 20_x_pc
         direction: asc
+    no_violin: True
 
 extra_fn_clean_trim:
   - "_per_exon"
@@ -19,4 +20,7 @@ sample_names_ignore:
   - "*Mendeliome_A-L"
   - "*Mendeliome_M-Z"
 
-max_table_rows: 200000
+template: "cmgg"
+
+run_modules:
+  - coverage
