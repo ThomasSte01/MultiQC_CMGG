@@ -1,0 +1,10 @@
+#exclude directories
+.git
+.github
+docs
+output
+build
+multiqc_cmgg.egg-info
+test_data
+.gitignore
+multiqc_report.html
