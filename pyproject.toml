@@ -8,7 +8,8 @@ version = "0.0.2"
 dependencies = [
     "pandas",
     "ruff>=0.8.3",
-    "multiqc>=1.10"
+    "multiqc>=1.29",
+    "polars-lts-cpu"
 ]
 authors = [
     {name = "Thomas Stevens", email = "thomas.stevens@student.howest.be"},
