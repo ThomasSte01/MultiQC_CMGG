@@ -6,7 +6,7 @@ custom_plot_config:
     defaultsort:
       - column: 20_x_pc
         direction: asc
-    no_violin: True
+    no_violin: true
 
 extra_fn_clean_trim:
   - "_per_exon"
@@ -24,3 +24,9 @@ template: "cmgg"
 
 run_modules:
   - coverage
+
+no_ai: true
+
+violin_downsample_after: 10
+
+plots_force_flat: true
