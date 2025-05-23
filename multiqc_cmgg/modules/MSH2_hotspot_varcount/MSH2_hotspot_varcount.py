@@ -62,33 +62,32 @@ class MultiqcModule(BaseMultiqcModule):
             },
             "MSH2_c.942+3A>T":{
                 "title" : "MSH2_c.942+3A>T (counts)",
-                "description":"frequency of 3A>T and counts",
-                "cond_formatting_rules":{"sanger":[{"s_contains":"- Sangeren!"}]},
+                "description":"frequency of MSH2_c.942+3A>T and counts",
+                "cond_formatting_rules":{"sanger":[{"s_contains":" "}]},
                 "cond_formatting_colours":[{"sanger":"#EE4B2B"}],
                 "scale":False,
             },
             "MSH2_c.942+2T>A":{
                 "title" : "MSH2_c.942+2T>A (counts)",
-                "description":"frequency of 2T>A and counts",
-                "cond_formatting_rules":{"sanger":[{"s_contains":"- Sangeren!"}]},
+                "description":"frequency of MSH2_c.942+2T>A and counts",
+                "cond_formatting_rules":{"sanger":[{"s_contains":" "}]},
                 "cond_formatting_colours":[{"sanger":"#EE4B2B"}],
                 "scale":False,
             },
             "MSH2_c.942+2T>C":{
                 "title" : "MSH2_c.942+2T>C (counts)",
-                "description":"frequency of 2T>C and counts",
-                "cond_formatting_rules":{"sanger":[{"s_contains":"- Sangeren!"}]},
+                "description":"frequency of MSH2_c.942+2T>C and counts",
+                "cond_formatting_rules":{"sanger":[{"s_contains":" "}]},
                 "cond_formatting_colours":[{"sanger":"#EE4B2B"}],
                 "scale":False,
             },
             "MSH2_c.942+2T>G":{
                 "title" : "MSH2_c.942+2T>G (counts)",
-                "description":"frequency of 2T>G and counts",
-                "cond_formatting_rules":{"sanger":[{"s_contains":"- Sangeren!"}]},
+                "description":"frequency of MSH2_c.942+2T>G and counts",
+                "cond_formatting_rules":{"sanger":[{"s_contains":" "}]},
                 "cond_formatting_colours":[{"sanger":"#EE4B2B"}],
                 "scale":False,
-            },
-            
+            }
         }
         self.add_section(
             plot=table.plot(data=MSH2_varcount_data, headers=headers, pconfig=config_table),
@@ -113,13 +112,13 @@ def parse_file(f: str) -> Dict[str, Union[float, str]]:
     #calculating frequency of mutation:
     for variant,counts in parsed_data.items():
         if variant != "MSH2_c.942+3_wt":
-            freq=round((int(counts)/(int(parsed_data["MSH2_c.942+3_wt"])+int(counts)))*100 ,2)
-            # Determining need for sanger
+            freq=round((int(counts))/(int(parsed_data["MSH2_c.942+3_wt"])+int(counts))*100 ,2)
+            # Determining need for sanger and adding text to value
             if freq >= config.MSH2_hotspot_varcount_config["sanger_threshold"]:
-                parsed_data[variant]=f"{freq}({counts}) - Sangeren!"
+                parsed_data[variant]=f"{freq}% ({counts})"
             else:
-                parsed_data[variant]=f"{freq}({counts})"
+                parsed_data[variant]=f"{freq}% ({counts})"
         else:
-            parsed_data[variant]=counts
-
+            parsed_data[variant]=int(parsed_data[variant])
+    log.info(parsed_data)
     return parsed_data
