@@ -1,4 +1,4 @@
-FROM quay.io/biocontainers/multiqc:1.28--pyhdfd78af_0
+FROM quay.io/biocontainers/multiqc:1.29--pyhdfd78af_0
 
 ADD . /src/multiqc_cmgg
 
