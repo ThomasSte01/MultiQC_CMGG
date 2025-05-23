@@ -13,5 +13,5 @@ jobs:
         run: docker build . -t thomstev/multiqc_cmgg:0.0.2dev
       - name: Push image to quay.io
         run: |
-          docker login quay.io -u thomstev -p ${{secrets.QUAY_TOKEN}}
+          docker login quay.io -u thomstev+github_actions -p ${{secrets.QUAY_TOKEN}}
           docker push thomstev/multiqc_cmgg:0.0.2dev
