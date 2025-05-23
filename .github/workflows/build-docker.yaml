@@ -1,4 +1,4 @@
-name: Build and Publish image to Docker Hub
+name: Build and Publish image to Quay.io
 on:
   [workflow_dispatch]
 
