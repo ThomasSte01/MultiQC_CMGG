@@ -1,11 +1,7 @@
-FROM python:latest
+FROM quay.io/biocontainers/multiqc:1.28--pyhdfd78af_0
 
-WORKDIR /home/multiqc_cmgg
+ADD . /src/multiqc_cmgg
 
-COPY . .
+RUN pip install --no-cache-dir -e /src/multiqc_cmgg
 
-# installing multiqc and multiqc_cmgg
-RUN pip install multiqc
-RUN pip install .
-
-
+RUN multiqc --help
