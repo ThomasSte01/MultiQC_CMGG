@@ -16,31 +16,6 @@ def read_config():
     if not isinstance(cfg, dict):
         return {}
 
-    cfg["include_contigs"] = cfg.get("include_contigs", [])
-    if not isinstance(cfg["include_contigs"], list):
-        cfg["include_contigs"] = []
-
-    cfg["exclude_contigs"] = cfg.get("exclude_contigs", [])
-    if not isinstance(cfg["exclude_contigs"], list):
-        cfg["exclude_contigs"] = []
-
-    xchr = cfg.get("xchr")
-    if xchr and isinstance(cfg["xchr"], str):
-        cfg["xchr"] = xchr
-
-    ychr = cfg.get("ychr")
-    if ychr and isinstance(cfg["ychr"], str):
-        cfg["ychr"] = ychr
-
-    if cfg["include_contigs"]:
-        log.debug(f"Trying to include these contigs in mosdepth: {', '.join(cfg['include_contigs'])}")
-    if cfg["exclude_contigs"]:
-        log.debug(f"Excluding these contigs from mosdepth: {', '.join(cfg['exclude_contigs'])}")
-    if cfg.get("xchr"):
-        log.debug(f'Using "{cfg["xchr"]}" as X chromosome name')
-    if cfg.get("ychr"):
-        log.debug(f'Using "{cfg["ychr"]}" as Y chromosome name')
-
     cutoff = cfg.get("perchrom_fraction_cutoff", 0.0)
     try:
         cutoff = float(cutoff)
@@ -51,7 +26,6 @@ def read_config():
     cfg["perchrom_fraction_cutoff"] = cutoff
 
     return cfg
-
 
 def genstats_cov_thresholds(cum_fraction_by_cov: Dict[int, float], threshs: List[int]) -> Dict[str, float]:
     genstats: Dict[str, float] = {}
@@ -81,89 +55,22 @@ class MultiqcModule(BaseMultiqcModule):
     - threshold output to indicate how many bases in each region are covered at the given thresholds (`{prefix}.thresholds.bed.gz`)
     - summary output providing region length, coverage mean, min, and max for each region. (`{prefix}.mosdepth.summary.txt`)
 
-    The MultiQC module plots coverage distributions from 2 kinds of outputs:
+    The MultiQC module plots coverage distributions from 1 output:
 
     - `{prefix}.mosdepth.region.dist.txt`
-    - `{prefix}.mosdepth.global.dist.txt`
 
-    Using "region" if exists, otherwise "global". Plotting 3 figures:
-
-    - Proportion of bases in the reference genome with, at least, a given depth of coverage (cumulative coverage distribution).
-    - Proportion of bases in the reference genome with a given depth of coverage (absolute coverage distribution).
-    - Average coverage per contig/chromosome.
-
-    Also plotting the percentage of the genome covered at a threshold in the General Stats section.
-    The default thresholds are 1, 5, 10, 30, 50, which can be customised in the config as follows:
+    Plotting the percentage of the genome covered at a threshold in the General Stats section.
+    The default thresholds are 20,30 which can be customised in the config as follows:
 
     ```yaml
     mosdepth_config:
       general_stats_coverage:
-        - 10
         - 20
-        - 40
-        - 200
-        - 30000
+        - 30
     ```
-
-    You can also specify which columns would be hidden when the report loads (by default, all values are hidden except 30X):
-
     ```yaml
     general_stats_coverage_hidden:
-      - 10
-      - 20
-      - 200
-    ```
-
-    For the per-contig coverage plot, you can include and exclude contigs based on name or pattern.
-
-    For example, you could add the following to your MultiQC config file:
-
-    ```yaml
-    mosdepth_config:
-      include_contigs:
-        - "chr*"
-      exclude_contigs:
-        - "*_alt"
-        - "*_decoy"
-        - "*_random"
-        - "chrUn*"
-        - "HLA*"
-        - "chrM"
-        - "chrEBV"
-    ```
-
-    Note that exclusion superseeds inclusion for the contig filters.
-
-    To additionally avoid cluttering the plot, mosdepth can exclude contigs with a low relative coverage.
-
-    ```yaml
-    mosdepth_config:
-      # Should be a fraction, e.g. 0.001 (exclude contigs with 0.1% coverage of sum of
-      # coverages across all contigs)
-      perchrom_fraction_cutoff: 0.001
-    ```
-
-    If you want to see what is being excluded, you can set `show_excluded_debug_logs` to `True`:
-
-    ```yaml
-    mosdepth_config:
-      show_excluded_debug_logs: True
-    ```
-
-    This will then print a debug log message (use `multiqc -v`) for each excluded contig.
-    This is disabled by default as there can be very many in some cases.
-
-    Besides the `{prefix}.mosdepth.global.dist.txt` and `{prefix}.mosdepth.region.dist.txt`
-    files, the `{prefix}.mosdepth.summary.txt` file is used for the General Stats table.
-
-    The module also plots an X/Y relative chromosome coverage per sample. By default, it finds chromosome named X/Y or chrX/chrY, but that can be customised:
-
-    ```yaml
-    mosdepth_config:
-      # Name of the X and Y chromosomes. If not specified, MultiQC will search for
-      # any chromosome names that look like x, y, chrx or chry (case-insensitive)
-      xchr: myXchr
-      ychr: myYchr
+        - 30
     ```
     """
 
@@ -177,6 +84,7 @@ class MultiqcModule(BaseMultiqcModule):
         )
 
         self.cfg = read_config()
+        log.info(self.cfg)
         genstats_by_sample: Dict[str, Dict[str, Union[int, float]]] = defaultdict(dict)  # mean coverage
 
         # Filter out any samples from --ignore-samples
@@ -195,25 +103,18 @@ class MultiqcModule(BaseMultiqcModule):
         # Replace None with actual version if it is available
         self.add_software_version(None)
 
-        descr_suf = ""
-        if samples_region:
-            descr_suf = ". Calculated across the target regions"
-
         if samples_region:
             data_dicts = data_dicts_region
             for d_region in data_dicts_region:
                 d_region.update(d_region)
             (
-                # cum_cov_dist_by_sample,
-                # perchrom_avg_by_sample,
-                #xy_cov_by_sample,
                 extra_genstats_by_sample,
             ) = data_dicts
 
             if extra_genstats_by_sample:
                 update_dict(genstats_by_sample, extra_genstats_by_sample)
 
-        # Adding hide buttons to report based of run names
+        # Adding hide buttons to report, based on run names
         list_yaml_configs=["show_hide_buttons","show_hide_mode","show_hide_patterns,show_hide_color"]
 
         for yaml_header in list_yaml_configs:
@@ -263,7 +164,7 @@ class MultiqcModule(BaseMultiqcModule):
                 "cond_formatting_rules":{"pass":[{"gt": 90},{"eq": 90}],"fail":[{"lt":90}]},
                 "cond_formatting_colours":[{"pass":"#5cb85c"},{"fail":"#d9534f"}],
             }
-        # Add mosdepth summary to General Stats
+        # Add coverage summary to General Stats
         genstats_headers.update(
             {
                 "median_coverage": {
@@ -286,20 +187,8 @@ class MultiqcModule(BaseMultiqcModule):
         Dict[str, Dict[str, Union[float, int, None]]],
     ]:
         """
-        Two types of coverage distributions are parsed: global and region.
-
-        {prefix}.mosdepth.global.dist.txt
-        a distribution of proportion of bases covered at or above a given threshhold for each chromosome and genome-wide
-
-        1       2       0.00
-        1       1       0.00
-        1       0       1.00
-        total   2       0.00
-        total   1       0.00
-        total   0       1.00
-
         {prefix}.mosdepth.region.dist.txt (if --by is specified)
-        same, but in regions
+        a distribution of proportion of bases covered at or above a given threshhold for each chromosome and genome-wide but in regions
 
         1       2       0.01
         1       1       0.01
@@ -307,8 +196,6 @@ class MultiqcModule(BaseMultiqcModule):
         total   2       0.00
         total   1       0.00
         """
-
-        # cumulative_pct_by_cov_by_sample: Dict[str, Dict] = defaultdict(dict)  # cumulative distribution
         bases_fraction_sum_per_contig_per_sample: Dict[str, Dict[str, float]] = defaultdict(
             dict
         )  # per chromosome average coverage
@@ -319,9 +206,6 @@ class MultiqcModule(BaseMultiqcModule):
         #Parse coverage distributions
         for f in self.find_log_files(f"coverage/{scope}_dist", filecontents=False, filehandles=True):
             s_name = self.clean_s_name(f["fn"], f)
-                
-            # if s_name in cumulative_pct_by_cov_by_sample:  # both region and global might exist, prioritizing region
-            #     continue
             
             self.add_data_source(f, s_name=s_name, section="genome_results")
 

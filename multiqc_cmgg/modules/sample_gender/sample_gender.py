@@ -5,7 +5,6 @@ from multiqc.plots import table
 from typing import Dict, Union
 import math
 
-
 # Initialise the main MultiQC logger
 log = logging.getLogger("multiqc")
 
@@ -21,7 +20,7 @@ class MultiqcModule(BaseMultiqcModule):
 
         # Find and load any input files for this module
         samplegender_data : Dict[str, Dict[str, Union[float, str]]] = dict()
-        # log.info(f"find log files: {list(self.find_log_files('sample_gender/xy'))}")
+        log.debug(f"Found log files: {list(self.find_log_files('sample_gender/xy'))}")
         method_dict={"sample_gender/xy":"_xy","sample_gender/hetx":"_hetx","sample_gender/sry":"_sry"}
         for method,extension in method_dict.items():
 
@@ -38,7 +37,6 @@ class MultiqcModule(BaseMultiqcModule):
                     samplegender_data[s_name].update(parsed)
                 # Filter to strip out ignored sample names
                 samplegender_data = self.ignore_samples(samplegender_data)
-        # log.info(f" dict with results: {samplegender_data}")
         
         # Calculating certainty of gender based of amount of times gender was determined and calculated sex
         list_gender_methods=['gender_xy','gender_hetx','gender_sry']

@@ -45,7 +45,6 @@ class MultiqcModule(BaseMultiqcModule):
         self.write_data_file(MSH2_varcount_data, "multiqc_MSH2_hotspot_varcount")
         self.add_software_version(None)
 
-        # log.info(MSH2_varcount_data)
         # Add MSH2_hotspot Table
         config_table = {
             "id": "MSH2_hotspot_varcount",
@@ -102,6 +101,7 @@ def parse_file(f: str) -> Dict[str, Union[float, str]]:
     
     if len(lines) < 3:
         # Not enough data, return an empty dictionary
+        log.warning("Not enough lines in the file to parse MSH2 hotspot variant counts.")
         return parsed_data
     headers = lines[2].strip().split(" ")[1:6]
     values = lines[3].strip().split(" ")[1:6]
@@ -109,16 +109,16 @@ def parse_file(f: str) -> Dict[str, Union[float, str]]:
     for key, value in zip(headers, values):
         parsed_data[key] = value
 
-    #calculating frequency of mutation:
+    #Calculating frequency of variants and determining need for sanger sequencing:
     for variant,counts in parsed_data.items():
         if variant != "MSH2_c.942+3_wt":
             freq=round((int(counts))/(int(parsed_data["MSH2_c.942+3_wt"])+int(counts))*100 ,2)
-            # Determining need for sanger and adding text to value
+            # Determining need for sanger according to threshold and adding frequency to parsed_data
             if freq >= config.MSH2_hotspot_varcount_config["sanger_threshold"]:
                 parsed_data[variant]=f"{freq}% ({counts})"
             else:
                 parsed_data[variant]=f"{freq}% ({counts})"
         else:
             parsed_data[variant]=int(parsed_data[variant])
-    log.info(parsed_data)
+
     return parsed_data
