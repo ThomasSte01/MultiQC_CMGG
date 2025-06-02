@@ -27,6 +27,7 @@ cmgg = "multiqc_cmgg.templates.cmgg"
 sample_gender = "multiqc_cmgg.modules.sample_gender.sample_gender:MultiqcModule"
 coverage = "multiqc_cmgg.modules.coverage.coverage:MultiqcModule"
 MSH2_hotspot_varcount = "multiqc_cmgg.modules.MSH2_hotspot_varcount.MSH2_hotspot_varcount:MultiqcModule"
+msi_sensor_pro = "multiqc_cmgg.modules.msi_sensor_pro.msi_sensor_pro:MultiqcModule"
 
 [project.entry-points."multiqc.hooks.v1"]
 execution_start = "multiqc_cmgg.multiqc_cmgg:plugin_execution_start"
