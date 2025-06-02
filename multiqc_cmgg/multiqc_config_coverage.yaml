@@ -12,7 +12,7 @@ extra_fn_clean_trim:
   - "_per_exon"
 
 mosdepth_config:
-  general_stats_coverage: [20,30]
+  general_stats_coverage: [20]
   general_stats_coverage_hidden: [30]
 
 sample_names_ignore: 
@@ -30,3 +30,5 @@ no_ai: true
 violin_downsample_after: 10
 
 plots_force_flat: true
+
+ai_anonymize_samples: false
