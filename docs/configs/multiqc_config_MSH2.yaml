@@ -1,3 +1,4 @@
+# Ordering table descendaly according to MSH2 hotspot variants
 custom_plot_config:
   MSH2_hotspot_varcount:
     defaultsort:
@@ -10,10 +11,13 @@ custom_plot_config:
       - column: "MSH2_c.942+2T>C"
         direction: desc
 
+# Defining threshold for MSH2 hotspot variants need for Sanger sequencing
 MSH2_hotspot_varcount_config:
   sanger_threshold : 20
 
+# Assigning modules to run
 run_modules:
   - MSH2_hotspot_varcount
-
+  
+# Assigning template
 template: "cmgg"

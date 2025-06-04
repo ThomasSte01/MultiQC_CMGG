@@ -1,0 +1,46 @@
+# Adding additional line to report
+report_comment: "Comment for the report"
+
+# Selecting modules to run
+run_modules:
+  - sample_gender
+  - coverage
+  - MSH2_hotspot_varcount
+  - msi_sensor_pro
+
+# Assigning order of columns in tables
+custom_plot_config:
+  general_stats_table:
+    defaultsort:
+      - column: "column to be sorted"
+        direction: asc
+      - column: "another column to be sorted"
+        direction: desc
+  different_table:
+    defaultsort:
+      - column: "column to be sorted"
+        direction: asc
+      - column: "another column to be sorted"
+        direction: desc
+
+# Removing part of sample name
+extra_fn_clean_trim:
+  - "*_removed_name_part"
+
+# configuring coverages for coverage module
+coverage_config:
+  general_stats_coverage: [1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+  general_stats_coverage_hidden: [1, 5, 10, 30, 40, 50, 60, 70, 80, 90, 100]
+
+# Ignoring samples with specific names
+sample_names_ignore: 
+  - "*ignored_sample_name*"
+  - "*another_ignored_sample_name*"
+
+# disableing ai
+no_ai: true
+
+ai_anonymize_samples: false
+
+# Reducing size of report
+plots_force_flat: true

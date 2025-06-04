@@ -1,6 +1,7 @@
 # Report design
 report_comment: "Panel 20X coverage has to be >=90%"
 
+# Order based of 20X coverage
 custom_plot_config:
   general_stats_table:
     defaultsort:
@@ -8,28 +9,27 @@ custom_plot_config:
         direction: asc
     no_violin: true
 
+# Removing _per_exon from sample names
 extra_fn_clean_trim:
   - "_per_exon"
 
+# Configuring coverages for coverage module
 coverage_config:
   general_stats_coverage: [20]
   general_stats_coverage_hidden: [30]
 
+# Ignoring samples with specific names
 sample_names_ignore: 
   - "*_seqcap_*"
   - "*Mendeliome_A-L"
   - "*Mendeliome_M-Z"
 
+# Assigning template
 template: "cmgg"
 
+# Assigning modules to run
 run_modules:
   - coverage
 
 # Reducing size of report
-no_ai: true
-
-violin_downsample_after: 10
-
 plots_force_flat: true
-
-ai_anonymize_samples: false
