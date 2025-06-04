@@ -1,11 +1,15 @@
-<div style="display: flex; justify-content: space-between; align-items: center;">
-<img src="docs/images/CMGG_logo.png" width="250" title="CMMG">
-<picture>
-  <source srcset="docs/images/MultiQC_logo_darkbg.png" media="(prefers-color-scheme: dark)">
-  <source srcset="docs/images/MultiQC_logo.png" media="(prefers-color-scheme: light)">
-  <img src="docs/images/MultiQC_logo_lightbg.png" width="250" title="MultiQC" alt="MultiQC logo">
-</picture>
-</div> 
+<p align="justify">
+  <img src="docs/images/CMGG_logo.png" width="250" title="CMMG" alt="CMGG logo">
+  
+  <!-- Spacer: a transparent GIF or PNG -->
+  <img src="https://via.placeholder.com/40x1/ffffff00?text=" width="5%" height="1" alt="" style="display:inline-block;">
+
+  <picture>
+    <source srcset="docs/images/MultiQC_logo_darkbg.png" media="(prefers-color-scheme: dark)">
+    <source srcset="docs/images/MultiQC_logo.png" media="(prefers-color-scheme: light)">
+    <img src="docs/images/MultiQC_logo.png" width="250" title="MultiQC" alt="MultiQC logo">
+  </picture>
+</p>
 
 ![Build status](https://github.com/ThomasSte01/MultiQC_CMGG/actions/workflows/build-docker.yaml/badge.svg) [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/) 
 
