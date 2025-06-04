@@ -1,4 +1,5 @@
-FROM quay.io/biocontainers/multiqc:1.29--pyhdfd78af_0
+ARG MULTIQC_TAG=latest
+FROM quay.io/biocontainers/multiqc:${MULTIQC_TAG}
 
 ADD . /src/multiqc_cmgg
 
