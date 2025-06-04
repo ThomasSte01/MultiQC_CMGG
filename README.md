@@ -1,9 +1,13 @@
-<p float="left">
+<div style="display: flex; justify-content: space-between; align-items: center;">
 <img src="docs/images/CMGG_logo.png" width="250" title="CMMG">
-<img src="docs/images/MultiQC_logo.png" width="250" title="MultiQC">
-</p>
+<picture>
+  <source srcset="docs/images/MultiQC_logo_darkbg.png" media="(prefers-color-scheme: dark)">
+  <source srcset="docs/images/MultiQC_logo.png" media="(prefers-color-scheme: light)">
+  <img src="docs/images/MultiQC_logo_lightbg.png" width="250" title="MultiQC" alt="MultiQC logo">
+</picture>
+</div> 
 
-![Build status](https://github.com/CenterForMedicalGeneticsGhent/MultiQC_CMGG/actions/workflows/linux.yaml/badge.svg)
+![Build status](https://github.com/ThomasSte01/MultiQC_CMGG/actions/workflows/build-docker.yaml/badge.svg) [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/) 
 
 **MultiQC_CMGG is a plugin for MultiQC containing customized modules and templates**
 
@@ -23,26 +27,27 @@ This plugin can be installed using the following methods
 pip install --upgrade --force-reinstall git+https://github.com/CenterForMedicalGeneticsGhent/MultiQC_CMGG.git
 ```
 
-- using `setuptools`:
+- using `docker`:
 
 ```bash
-git clone https://github.com/CenterForMedicalGeneticsGhent/MultiQC_CMGG
-cd MultiQC_CMGG
-python setup.py install
+docker build https://github.com/CenterForMedicalGeneticsGhent/MultiQC_CMGG.git -t multiqc_cmgg
 ```
 
 ## Usage
 
 ### Modules
 
-| Name           | Description                                                                                                                                                                      |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Name |Description| 
+| ---- | --------- |
 | sample_gender | Parse and merges ngs-bits [SampleGender](https://github.com/imgag/ngs-bits) output from xy, hetx, sry method into a sensible table. Based of [ngs-bits](https://docs.seqera.io/multiqc/modules/ngsbits) MultiQC module. To use module add `-m/--module sample_gender`. |
-| coverage | Parse Mosdepth [Mosdepth](https://github.com/brentp/mosdepth) region files into tables based on genome panels. Based of [Mosdepth](https://docs.seqera.io/multiqc/modules/mosdepth) MultiQC module. To use module add `-m/--module coverage` and `-c/--config <path_to_multiqc_config_coverage.yaml>`|
+| coverage | Parse [Mosdepth](https://github.com/brentp/mosdepth) region files into tables based on genome panels. Based of [Mosdepth MultiQC module](https://docs.seqera.io/multiqc/modules/mosdepth) . To use module add `-m/--module coverage` and `-c/--config <path_to_multiqc_config_coverage.yaml>`|
 | MSH2_hotspot_varcount |  Parses count files of a MSH2 hotspot variant from [nf-cmgg pipeline](https://github.com/nf-cmgg/report) to make a report in MultiQC. To use module add `-m/--module MSH2_hotspot_varcount` and `-c/--config <path_to_multiqc_config_msh2.yaml>` |
+| msi_sensor_pro | Parses files from ... |
 
-### Templates
+More thorough explaination on setting up modules, installation and integration into nextflow pipelines can be found [here](USAGE.md).
 
-| Name | Description                                                                                                                                    |
-| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+### Template
+
+| Name | Description|
+| ---- | ---------- |
 | cmgg | CMGG specfic template with custom logo's and affiliate links. To enable this template, add the `-t/--template cmgg` option to the command line. |
