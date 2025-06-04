@@ -146,7 +146,7 @@ class MultiqcModule(BaseMultiqcModule):
     def parse_cov_dist(self,) -> Dict[str, Dict[str, Union[float, int, None]]]:
         # per chromosome average coverage
         genstats_by_sample: Dict[str, Dict[str, Union[float, int, None]]] = dict()
-        threshs, hidden_threshs = config.get_cov_thresholds("mosdepth_config")
+        threshs, hidden_threshs = config.get_cov_thresholds("coverage_config")
         for f in self.find_log_files(f"coverage/region_dist", filecontents=False, filehandles=True):
             s_name = self.clean_s_name(f["fn"], f)
             self.add_data_source(f, s_name=s_name, section="genome_results")
