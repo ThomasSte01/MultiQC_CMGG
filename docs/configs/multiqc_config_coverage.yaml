@@ -1,4 +1,4 @@
-#report design
+# Report design
 report_comment: "Panel 20X coverage has to be >=90%"
 
 custom_plot_config:
@@ -11,7 +11,7 @@ custom_plot_config:
 extra_fn_clean_trim:
   - "_per_exon"
 
-mosdepth_config:
+coverage_config:
   general_stats_coverage: [20]
   general_stats_coverage_hidden: [30]
 
@@ -25,6 +25,7 @@ template: "cmgg"
 run_modules:
   - coverage
 
+# Reducing size of report
 no_ai: true
 
 violin_downsample_after: 10
