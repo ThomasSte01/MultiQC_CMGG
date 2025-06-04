@@ -1,0 +1,4 @@
+## script do_it.sh running in version 0.0
+## date is Mon May 12 12:29:15 UTC 2025
+Sample MSH2_c.942+3_wt MSH2_c.942+3A>T MSH2_c.942+2T>A MSH2_c.942+2T>C MSH2_c.942+2T>G
+test1.merged.fastq.gz 57 51 0 0 3
