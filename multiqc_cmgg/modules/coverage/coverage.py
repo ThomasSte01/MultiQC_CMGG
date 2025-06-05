@@ -62,7 +62,7 @@ class MultiqcModule(BaseMultiqcModule):
             doi="10.1093/bioinformatics/btx699",
         )     
         # Load in thresholds and hidden thresholds from config
-        threshs, hidden_threshs = config.get_cov_thresholds("mosdepth_config")
+        threshs, hidden_threshs = config.get_cov_thresholds("coverage_config")
         thresh = threshs[0]
         
         genstats_by_sample: Dict[str, Dict[str, Union[int, float]]] = defaultdict(dict)  # mean coverage
