@@ -1,4 +1,4 @@
-name: Build and Publish image to Docker Hub
+name: Build and Publish image to Quay.io
 on:
   [workflow_dispatch]
 
@@ -9,9 +9,16 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
-      - name: build image
-        run: docker build . -t thomstev/multiqc_cmgg:0.0.2dev
-      - name: Push image to quay.io
+      - name: Get latest MultiQC tag
+        id: get_tag
         run: |
-          docker login quay.io -u thomstev -p ${{secrets.QUAY_TOKEN}}
-          docker push thomstev/multiqc_cmgg:0.0.2dev
+          TAG=$(curl -s https://quay.io/api/v1/repository/biocontainers/multiqc/tag/?limit=1 | jq -r '.tags[0].name')
+          echo "LATEST_TAG=$TAG" >> $GITHUB_ENV
+
+      - name: Build image
+        run: docker build . --build-arg MULTIQC_TAG=${{ env.LATEST_TAG }} -t quay.io/thomstev/multiqc_cmgg:0.0.2dev
+
+      - name: Login and Push image to quay.io
+        run: |
+          docker login quay.io -u thomstev+github_actions -p ${{secrets.QUAY_TOKEN}}
+          docker push quay.io/thomstev/multiqc_cmgg:0.0.2dev
