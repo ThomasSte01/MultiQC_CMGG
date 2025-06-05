@@ -48,8 +48,8 @@ def plugin_execution_start():
             {"sample_gender/sry": {"fn": "*_sry.tsv", "shared": False}},
             {"coverage/region_dist": {"fn": "*.mosdepth.region.dist.txt","shared": False}},
             {"MSH2_hotspot_varcount/counts": {"fn": "*.counts.txt","shared": False}},
-            {"msi_sensor_pro/summary": {"fn": "*_summary*","shared": False}},
-            {"msi_sensor_pro/all": {"fn": "*_all*","shared": False}},
+            {"msi_sensor_pro/summary": {"fn": "*_summary_msi*","shared": False}},
+            {"msi_sensor_pro/all": {"fn": "*_all_msi*","shared": False}},
     ]
     for searchp in list_sps:
         config.update_dict(config.sp,searchp)
