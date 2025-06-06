@@ -30,3 +30,5 @@ custom_plot_config:
     defaultsort:
       - column: "perc"
         direction: desc
+
+template: "cmgg"
