@@ -1,5 +1,6 @@
 name: "Build - Linux"
-on: [push, pull_request]
+on: [workflow_dispatch]
+# on: [push, pull_request]
 
 jobs:
   run_multiqc:

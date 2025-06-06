@@ -50,7 +50,7 @@ run_modules:
 
 ### MSH2_hotspot_varcount
 
-The MSH2_hotspot_varcount module is designed to take results from the [nf-cmgg/report](https://github.com/nf-cmgg/report) pipeline which produces \<sample>.counts.txt files and parse these into a multiqc report.
+The MSH2_hotspot_varcount module is designed to take results from the [nf-cmgg/report](https://github.com/nf-cmgg/report) pipeline. This pipeline produces \<sample>.counts.txt files and these files get parsed into a multiqc report.
 
 This module requires the presence of the sanger_threshold parameter. This parameter defines the threshold at which samples are colored for failure or pass. 
 
@@ -65,7 +65,16 @@ The sample_gender modules does not require any parameters it will simply search 
 
 ### Msi_sensor_pro
 
-**Need information from Tuur**
+The msi_sensor_pro module is designed to take results from the [nf-cmgg/smallvariants](https://github.com/nf-cmgg/smallvariants) pipeline and parse them into a multiqc report.
+
+The module requires the following parameters to function. 
+
+```yaml
+msi_sensor_pro_coverage_threshold: 300
+msi_sensor_pro_min_sites: 10
+msi_high_threshold: 30
+```
+The additional styling settings can be found in this [multiqc_config.yaml](docs/configs/multiqc_config_msisensorpro.yaml) file.
 
 ### Additional parameters
 
