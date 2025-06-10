@@ -39,9 +39,9 @@ def plugin_execution_start():
 
     log.debug("CMGG - Updating config")
     # Add module to module order
-    config.module_order.extend(["sample_gender","coverage"])
+    config.module_order.extend(["sample_gender","coverage","MSH2_hotspot_varcount","msi_sensor_pro"])
      # Move module to the top
-    config.top_modules.extend(["sample_gender","coverage"])
+    config.top_modules.extend(["sample_gender","coverage","MSH2_hotspot_varcount","msi_sensor_pro"])
 
     list_sps=[{"sample_gender/xy": {"fn": "*_xy.tsv", "shared": False}},
             {"sample_gender/hetx": {"fn": "*_hetx.tsv", "shared": False}},
