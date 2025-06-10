@@ -45,7 +45,7 @@ docker build https://github.com/CenterForMedicalGeneticsGhent/MultiQC_CMGG.git -
 | ---- | --------- |
 | sample_gender | Parse and merges ngs-bits [SampleGender](https://github.com/imgag/ngs-bits) output from xy, hetx, sry method into a sensible table. Based of [ngs-bits](https://docs.seqera.io/multiqc/modules/ngsbits) MultiQC module. To use module add `-m/--module sample_gender`. |
 | coverage | Parse [Mosdepth](https://github.com/brentp/mosdepth) region files into tables based on genome panels. Based of [Mosdepth MultiQC module](https://docs.seqera.io/multiqc/modules/mosdepth) . To use module add `-m/--module coverage` and `-c/--config <path_to_multiqc_config_coverage.yaml>`|
-| MSH2_hotspot_varcount |  Parses count files of a MSH2 hotspot variant from [nf-cmgg pipeline](https://github.com/nf-cmgg/report) to make a report in MultiQC. To use module add `-m/--module MSH2_hotspot_varcount` and `-c/--config <path_to_multiqc_config_msh2.yaml>` |
+| MSH2_hotspot_varcount |  Parses count files of a MSH2 hotspot variant from [nf-cmgg/report pipeline](https://github.com/nf-cmgg/report) to make a report in MultiQC. To use module add `-m/--module MSH2_hotspot_varcount` and `-c/--config <path_to_multiqc_config_msh2.yaml>` |
 | msi_sensor_pro | Parses output from [msisensor-pro](https://github.com/xjtu-omics/msisensor-pro), generating an overview table from the summary file and a detailed table of MSI status for each locus from all results file. Also creates a bargraph visualizing the msisensor-pro scores. |
 
 More thorough explaination on setting up modules, installation and integration into nextflow pipelines can be found [here](USAGE.md).
