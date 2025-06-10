@@ -78,7 +78,7 @@ The additional styling settings can be found in this [multiqc_config.yaml](docs/
 
 ### Additional parameters
 
-To lessen the amount of samples use:
+To lessen the amount of samples used:
 
 ```yaml
 sample_names_ignore: 
@@ -87,7 +87,7 @@ sample_names_ignore:
   - "*Mendeliome_M-Z"
 ```
 
-To clean up the sample names:
+To clean up sample names:
 ```yaml
 extra_fn_clean_trim:
   - "_per_exon"
